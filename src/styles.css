@@ -678,6 +678,15 @@ h2 {
 .empty-state h3 {
   font: 600 2rem/1.1 var(--display);
 }
+.error-detail {
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  background: var(--paper-dark);
+  padding: 1rem;
+  color: var(--rust);
+  white-space: pre-wrap;
+}
 .early-signals {
   border-top: 1px solid var(--ink);
   padding-block: var(--space-5);

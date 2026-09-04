@@ -23,6 +23,7 @@
     "verify": "pnpm typecheck && pnpm test && pnpm build",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "db:use-pooler": "tsx scripts/use-supabase-pooler.ts",
     "github:sync": "tsx scripts/sync-github.ts",
     "asset:process": "tsx scripts/process-asset.ts",
     "editor:invite": "tsx scripts/invite-editor.ts"

@@ -1,4 +1,5 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import type { ErrorComponentProps } from '@tanstack/react-router'
 import appCss from '../styles.css?url'
 import { Providers } from '../components/providers'
 import { SiteHeader } from '../components/site-chrome'
@@ -29,6 +30,7 @@ export const Route = createRootRoute({
     ],
   }),
   shellComponent: RootDocument,
+  errorComponent: RootError,
   notFoundComponent: NotFound,
 })
 
@@ -49,6 +51,29 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
+  )
+}
+
+function RootError({ error, reset }: ErrorComponentProps) {
+  const detail = error instanceof Error ? error.message : 'Unknown error'
+
+  return (
+    <main className="shell">
+      <div className="empty-state">
+        <p className="eyebrow">Application error</p>
+        <h1>The field guide could not be loaded.</h1>
+        <p>
+          Please try again. If the problem continues, check the database
+          connection and migration status.
+        </p>
+        {process.env.NODE_ENV !== 'production' ? (
+          <pre className="error-detail">{detail}</pre>
+        ) : null}
+        <button className="button" type="button" onClick={reset}>
+          Try again
+        </button>
+      </div>
+    </main>
   )
 }
 
