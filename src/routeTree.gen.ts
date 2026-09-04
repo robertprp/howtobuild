@@ -12,9 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CategoryRouteImport } from './routes/$category'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TrendingRouteImport } from './routes/trending'
+import { Route as CategoryEcosystemRouteImport } from './routes/$category.$ecosystem'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminMetricsRouteImport } from './routes/admin/metrics'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as PreviewProjectRouteImport } from './routes/preview/$project'
 import { Route as ProjectsProjectRouteImport } from './routes/projects/$project'
@@ -38,6 +42,11 @@ const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
   path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
@@ -48,9 +57,24 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TrendingRoute = TrendingRouteImport.update({
+  id: '/trending',
+  path: '/trending',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoryEcosystemRoute = CategoryEcosystemRouteImport.update({
+  id: '/$ecosystem',
+  path: '/$ecosystem',
+  getParentRoute: () => CategoryRoute,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminMetricsRoute = AdminMetricsRouteImport.update({
+  id: '/admin/metrics',
+  path: '/admin/metrics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiHealthRoute = ApiHealthRouteImport.update({
@@ -91,10 +115,14 @@ const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/$category': typeof CategoryRoute
+  '/$category': typeof CategoryRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
+  '/search': typeof SearchRoute
   '/sign-in': typeof SignInRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/trending': typeof TrendingRoute
+  '/$category/$ecosystem': typeof CategoryEcosystemRoute
+  '/admin/metrics': typeof AdminMetricsRoute
   '/api/health': typeof ApiHealthRoute
   '/preview/$project': typeof PreviewProjectRoute
   '/projects/$project': typeof ProjectsProjectRoute
@@ -106,10 +134,14 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/$category': typeof CategoryRoute
+  '/$category': typeof CategoryRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
+  '/search': typeof SearchRoute
   '/sign-in': typeof SignInRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/trending': typeof TrendingRoute
+  '/$category/$ecosystem': typeof CategoryEcosystemRoute
+  '/admin/metrics': typeof AdminMetricsRoute
   '/api/health': typeof ApiHealthRoute
   '/preview/$project': typeof PreviewProjectRoute
   '/projects/$project': typeof ProjectsProjectRoute
@@ -122,10 +154,14 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/$category': typeof CategoryRoute
+  '/$category': typeof CategoryRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
+  '/search': typeof SearchRoute
   '/sign-in': typeof SignInRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/trending': typeof TrendingRoute
+  '/$category/$ecosystem': typeof CategoryEcosystemRoute
+  '/admin/metrics': typeof AdminMetricsRoute
   '/api/health': typeof ApiHealthRoute
   '/preview/$project': typeof PreviewProjectRoute
   '/projects/$project': typeof ProjectsProjectRoute
@@ -141,8 +177,12 @@ export interface FileRouteTypes {
     | '/'
     | '/$category'
     | '/robots.txt'
+    | '/search'
     | '/sign-in'
     | '/sitemap.xml'
+    | '/trending'
+    | '/$category/$ecosystem'
+    | '/admin/metrics'
     | '/api/health'
     | '/preview/$project'
     | '/projects/$project'
@@ -156,8 +196,12 @@ export interface FileRouteTypes {
     | '/'
     | '/$category'
     | '/robots.txt'
+    | '/search'
     | '/sign-in'
     | '/sitemap.xml'
+    | '/trending'
+    | '/$category/$ecosystem'
+    | '/admin/metrics'
     | '/api/health'
     | '/preview/$project'
     | '/projects/$project'
@@ -171,8 +215,12 @@ export interface FileRouteTypes {
     | '/'
     | '/$category'
     | '/robots.txt'
+    | '/search'
     | '/sign-in'
     | '/sitemap.xml'
+    | '/trending'
+    | '/$category/$ecosystem'
+    | '/admin/metrics'
     | '/api/health'
     | '/preview/$project'
     | '/projects/$project'
@@ -185,10 +233,13 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CategoryRoute: typeof CategoryRoute
+  CategoryRoute: typeof CategoryRouteWithChildren
   RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SearchRoute: typeof SearchRoute
   SignInRoute: typeof SignInRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TrendingRoute: typeof TrendingRoute
+  AdminMetricsRoute: typeof AdminMetricsRoute
   ApiHealthRoute: typeof ApiHealthRoute
   PreviewProjectRoute: typeof PreviewProjectRoute
   ProjectsProjectRoute: typeof ProjectsProjectRoute
@@ -222,6 +273,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RobotsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sign-in': {
       id: '/sign-in'
       path: '/sign-in'
@@ -236,11 +294,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/trending': {
+      id: '/trending'
+      path: '/trending'
+      fullPath: '/trending'
+      preLoaderRoute: typeof TrendingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$category/$ecosystem': {
+      id: '/$category/$ecosystem'
+      path: '/$ecosystem'
+      fullPath: '/$category/$ecosystem'
+      preLoaderRoute: typeof CategoryEcosystemRouteImport
+      parentRoute: typeof CategoryRoute
+    }
     '/admin/': {
       id: '/admin/'
       path: '/admin'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/metrics': {
+      id: '/admin/metrics'
+      path: '/admin/metrics'
+      fullPath: '/admin/metrics'
+      preLoaderRoute: typeof AdminMetricsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/health': {
@@ -295,12 +374,27 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface CategoryRouteChildren {
+  CategoryEcosystemRoute: typeof CategoryEcosystemRoute
+}
+
+const CategoryRouteChildren: CategoryRouteChildren = {
+  CategoryEcosystemRoute: CategoryEcosystemRoute,
+}
+
+const CategoryRouteWithChildren = CategoryRoute._addFileChildren(
+  CategoryRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CategoryRoute: CategoryRoute,
+  CategoryRoute: CategoryRouteWithChildren,
   RobotsDottxtRoute: RobotsDottxtRoute,
+  SearchRoute: SearchRoute,
   SignInRoute: SignInRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TrendingRoute: TrendingRoute,
+  AdminMetricsRoute: AdminMetricsRoute,
   ApiHealthRoute: ApiHealthRoute,
   PreviewProjectRoute: PreviewProjectRoute,
   ProjectsProjectRoute: ProjectsProjectRoute,

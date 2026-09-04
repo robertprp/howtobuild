@@ -9,6 +9,7 @@ import {
   timestamp,
   uniqueIndex,
   uuid,
+  real,
 } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 
@@ -108,8 +109,17 @@ export const repositories = pgTable(
     owner: text('owner').notNull(),
     name: text('name').notNull(),
     etag: text('etag'),
+    htmlUrl: text('html_url'),
+    defaultBranch: text('default_branch'),
+    archived: boolean('archived').default(false).notNull(),
+    private: boolean('private').default(false).notNull(),
+    manuallyExcluded: boolean('manually_excluded').default(false).notNull(),
+    exclusionReason: text('exclusion_reason'),
+    syncStatus: text('sync_status').default('pending').notNull(),
+    lastAttemptAt: timestamp('last_attempt_at', { withTimezone: true }),
     lastSyncedAt: timestamp('last_synced_at', { withTimezone: true }),
     lastError: text('last_error'),
+    consecutiveFailures: integer('consecutive_failures').default(0).notNull(),
   },
   (table) => [
     uniqueIndex('repository_owner_name_idx').on(table.owner, table.name),
@@ -132,6 +142,7 @@ export const facets = pgTable(
     kind: text('kind').notNull(),
     slug: text('slug').notNull(),
     name: text('name').notNull(),
+    description: text('description'),
   },
   (table) => [uniqueIndex('facet_kind_slug_idx').on(table.kind, table.slug)],
 )
@@ -363,6 +374,9 @@ export const githubSnapshots = pgTable(
     openIssues: integer('open_issues').notNull(),
     pushedAt: timestamp('pushed_at', { withTimezone: true }),
     latestReleaseAt: timestamp('latest_release_at', { withTimezone: true }),
+    responseEtag: text('response_etag'),
+    requestOutcome: text('request_outcome').default('200').notNull(),
+    collectorVersion: text('collector_version').default('v1').notNull(),
     raw: jsonb('raw').notNull(),
   },
   (table) => [
@@ -373,6 +387,79 @@ export const githubSnapshots = pgTable(
     index('github_snapshot_repository_idx').on(table.repositoryId),
   ],
 )
+
+export const projectMomentum = pgTable(
+  'project_momentum',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id, { onDelete: 'cascade' }),
+    calculatedAt: timestamp('calculated_at', { withTimezone: true }).notNull(),
+    currentSnapshotId: uuid('current_snapshot_id')
+      .notNull()
+      .references(() => githubSnapshots.id, { onDelete: 'cascade' }),
+    weeklySnapshotId: uuid('weekly_snapshot_id').references(
+      () => githubSnapshots.id,
+      { onDelete: 'set null' },
+    ),
+    monthlySnapshotId: uuid('monthly_snapshot_id').references(
+      () => githubSnapshots.id,
+      { onDelete: 'set null' },
+    ),
+    stars: integer('stars').notNull(),
+    absolute7d: integer('absolute_7d'),
+    absolute30d: integer('absolute_30d'),
+    relative7d: real('relative_7d'),
+    relative30d: real('relative_30d'),
+    activityFactor: real('activity_factor').notNull(),
+    score: real('score'),
+    confidence: text('confidence').notNull(),
+    windowStart: timestamp('window_start', { withTimezone: true }),
+    windowEnd: timestamp('window_end', { withTimezone: true }).notNull(),
+    anomaly: boolean('anomaly').default(false).notNull(),
+    anomalyReasons: jsonb('anomaly_reasons').$type<string[]>().notNull(),
+    algorithmVersion: text('algorithm_version').notNull(),
+  },
+  (table) => [
+    uniqueIndex('project_momentum_project_calculated_idx').on(
+      table.projectId,
+      table.calculatedAt,
+    ),
+    index('project_momentum_rank_idx').on(table.calculatedAt, table.score),
+  ],
+)
+
+export const searchAliases = pgTable(
+  'search_aliases',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id, { onDelete: 'cascade' }),
+    alias: text('alias').notNull(),
+    normalizedAlias: text('normalized_alias').notNull(),
+  },
+  (table) => [
+    uniqueIndex('search_alias_project_normalized_idx').on(
+      table.projectId,
+      table.normalizedAlias,
+    ),
+    index('search_alias_normalized_idx').on(table.normalizedAlias),
+  ],
+)
+
+export const searchZeroResults = pgTable('search_zero_results', {
+  queryHash: text('query_hash').primaryKey(),
+  normalizedQuery: text('normalized_query').notNull(),
+  count: integer('count').default(1).notNull(),
+  firstSeenAt: timestamp('first_seen_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  lastSeenAt: timestamp('last_seen_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+})
 
 export const collectorLeases = pgTable('collector_leases', {
   name: text('name').primaryKey(),
@@ -413,6 +500,7 @@ export const schema = {
   editorRoles,
   facets,
   githubSnapshots,
+  projectMomentum,
   phaseZeroChecks,
   projectAssets,
   projectFacets,
@@ -422,6 +510,8 @@ export const schema = {
   projects,
   projectSources,
   repositories,
+  searchAliases,
+  searchZeroResults,
   session,
   sessionRelations,
   user,

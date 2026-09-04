@@ -27,9 +27,11 @@ export function ProjectMeta({ project }: { project: PublicProject }) {
 export function TrendingRow({
   project,
   rank,
+  period = 'week',
 }: {
   project: PublicProject
   rank: number
+  period?: 'week' | 'month'
 }) {
   return (
     <a className="trending-row" href={`/projects/${project.slug}`}>
@@ -40,8 +42,42 @@ export function TrendingRow({
         <span>{project.shortDescription}</span>
       </span>
       <ProjectMeta project={project} />
-      <span className="metric-unavailable">Editorial signal</span>
+      <MomentumSummary project={project} period={period} />
     </a>
+  )
+}
+
+function compact(value: number) {
+  return new Intl.NumberFormat('en-US', {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(value)
+}
+
+export function MomentumSummary({
+  project,
+  period = 'week',
+}: {
+  project: PublicProject
+  period?: 'week' | 'month'
+}) {
+  const momentum = project.momentum
+  if (!momentum)
+    return <span className="metric-unavailable">History starts after sync</span>
+  const delta = period === 'week' ? momentum.absolute7d : momentum.absolute30d
+  if (delta === null)
+    return (
+      <span className="metric-unavailable">
+        Early signal · ★ {compact(momentum.stars)}
+      </span>
+    )
+  return (
+    <span className="momentum-summary">
+      <strong>+{compact(delta)}</strong>
+      <span>
+        {period === 'week' ? '7 days' : '30 days'} · ★ {compact(momentum.stars)}
+      </span>
+    </span>
   )
 }
 

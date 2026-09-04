@@ -32,6 +32,19 @@ export const Route = createFileRoute('/$category')({
 
 function CategoryPage() {
   const { category, projects } = Route.useLoaderData()
+  const categoryFacets = Array.from(
+    new Map(
+      projects.flatMap((project) =>
+        project.facets.map((facet) => [`${facet.kind}-${facet.slug}`, facet]),
+      ),
+    ).values(),
+  )
+  const trending = projects
+    .filter(
+      (project) =>
+        project.momentum?.score !== null && !project.momentum?.anomaly,
+    )
+    .sort((a, b) => (b.momentum?.score ?? 0) - (a.momentum?.score ?? 0))
   return (
     <>
       <main>
@@ -52,10 +65,45 @@ function CategoryPage() {
           </div>
           <p>
             Recommendations balance technical fit, maintainability, operating
-            cost, and documented tradeoffs. Automated momentum will be shown
-            separately when enough history exists.
+            cost, and documented tradeoffs. Momentum uses separate, versioned
+            GitHub evidence when enough history exists.
           </p>
         </section>
+        {categoryFacets.length ? (
+          <nav
+            className="shell ecosystem-links"
+            aria-label={`${category.name} languages and ecosystems`}
+          >
+            {categoryFacets.map((facet) => (
+              <a
+                href={`/${category.slug}/${facet.slug}`}
+                key={`${facet.kind}-${facet.slug}`}
+              >
+                <span>{facet.kind}</span>
+                <strong>{facet.name}</strong>
+              </a>
+            ))}
+          </nav>
+        ) : null}
+        {trending.length ? (
+          <section className="shell project-section">
+            <div className="section-heading">
+              <div>
+                <p className="eyebrow">Measured momentum</p>
+                <h2>Trending in {category.name}.</h2>
+              </div>
+            </div>
+            <div className="trending-list">
+              {trending.slice(0, 6).map((project, index) => (
+                <TrendingRow
+                  project={project}
+                  rank={index + 1}
+                  key={project.id}
+                />
+              ))}
+            </div>
+          </section>
+        ) : null}
         {projects[0] ? (
           <section className="shell feature-section">
             <EditorialFeature project={projects[0]} />
