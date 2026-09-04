@@ -1,6 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { getRequest, setResponseHeaders } from '@tanstack/react-start/server'
 import { z } from 'zod'
+import { listMetricHealth } from '../github/metrics.server'
 
 import { requireEditor } from './auth.server'
 import {
@@ -31,6 +32,16 @@ export const getHomeData = createServerFn({ method: 'GET' }).handler(
     ])
     return {
       categories: allCategories,
+      trending: allProjects
+        .filter(
+          (project) =>
+            project.momentum?.score !== null &&
+            project.momentum?.health !== 'stale' &&
+            project.momentum?.health !== 'disabled' &&
+            !project.momentum?.anomaly,
+        )
+        .sort((a, b) => (b.momentum?.score ?? 0) - (a.momentum?.score ?? 0))
+        .slice(0, 8),
       featured: allProjects
         .filter((project) => project.recommended)
         .slice(0, 6),
@@ -100,3 +111,11 @@ export const getHistoryData = createServerFn({ method: 'GET' })
     await requireEditor(getRequest())
     return getProjectHistory(data.projectId)
   })
+
+export const getMetricsData = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    setResponseHeaders(privateHeaders)
+    const editor = await requireEditor(getRequest())
+    return { editor, repositories: await listMetricHealth() }
+  },
+)

@@ -28,9 +28,14 @@ function AdminHome() {
           <p className="eyebrow">Editorial desk</p>
           <h1>Good morning, {editor.name.split(' ')[0]}.</h1>
         </div>
-        <a className="button" href="/admin/projects/new">
-          New project
-        </a>
+        <div className="editor-actions">
+          <a className="button secondary" href="/admin/metrics">
+            Metric health
+          </a>
+          <a className="button" href="/admin/projects/new">
+            New project
+          </a>
+        </div>
       </header>
       <section className="admin-summary">
         <div>

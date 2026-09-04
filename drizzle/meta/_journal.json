@@ -29,6 +29,13 @@
       "when": 1788511707377,
       "tag": "0003_flowery_red_ghost",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1788532815744,
+      "tag": "0004_fresh_may_parker",
+      "breakpoints": true
     }
   ]
 }

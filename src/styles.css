@@ -350,6 +350,20 @@ h2 {
 .metric-unavailable {
   text-align: right;
 }
+.momentum-summary {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+  font-family: var(--mono);
+}
+.momentum-summary strong {
+  color: var(--green);
+  font-size: 1rem;
+}
+.momentum-summary span {
+  color: var(--muted);
+  font-size: 0.68rem;
+}
 
 .feature-section {
   padding-block: 1rem var(--space-6);
@@ -539,6 +553,176 @@ h2 {
   margin-top: 0.4rem;
   color: var(--muted);
   font-family: var(--mono);
+}
+.momentum-panel {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: 3rem;
+  margin-top: var(--space-5);
+  border-block: 1px solid var(--ink);
+  padding-block: 2.5rem;
+}
+.momentum-panel h2 {
+  margin: 0;
+}
+.momentum-facts {
+  margin: 0;
+}
+.momentum-facts > div {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 1rem;
+  border-bottom: 1px solid var(--line);
+  padding: 0.75rem 0;
+}
+.momentum-facts dt {
+  font: 500 0.7rem/1.4 var(--mono);
+  text-transform: uppercase;
+}
+.momentum-facts dd {
+  margin: 0;
+}
+
+.ecosystem-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-block: 2rem;
+  border-bottom: 1px solid var(--line);
+}
+.ecosystem-links a {
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--ink);
+  padding: 0.8rem 1rem;
+  text-decoration: none;
+}
+.ecosystem-links span {
+  color: var(--muted);
+  font: 500 0.65rem/1.4 var(--mono);
+  text-transform: uppercase;
+}
+
+.discovery-page {
+  padding-block: var(--space-5) var(--space-6);
+}
+.discovery-heading {
+  max-width: 960px;
+  padding-bottom: 3rem;
+}
+.search-form,
+.trend-controls {
+  display: grid;
+  grid-template-columns: minmax(280px, 2fr) repeat(
+      2,
+      minmax(150px, 1fr)
+    ) auto auto auto;
+  gap: 1rem;
+  align-items: end;
+  border-block: 1px solid var(--ink);
+  padding-block: 1.2rem;
+}
+.filter-check,
+.trend-controls fieldset label {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.filter-check input,
+.trend-controls input {
+  width: 20px;
+  height: 20px;
+}
+.trend-controls {
+  grid-template-columns: 2fr 1fr auto;
+}
+.trend-controls fieldset {
+  display: flex;
+  gap: 1.5rem;
+  border: 0;
+  padding: 0;
+}
+.trend-controls legend {
+  font-weight: 600;
+}
+.landing-results {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding-top: 3rem;
+}
+.landing-results > .eyebrow {
+  grid-column: 1 / -1;
+}
+.landing-results a {
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--ink);
+  padding: 1rem;
+  text-decoration: none;
+}
+.landing-results strong {
+  font: 600 1.5rem/1.2 var(--display);
+}
+.landing-results span:last-child {
+  margin-top: 0.5rem;
+  color: var(--muted);
+}
+.empty-state {
+  border: 1px solid var(--ink);
+  padding: 2rem;
+}
+.empty-state h3 {
+  font: 600 2rem/1.1 var(--display);
+}
+.early-signals {
+  border-top: 1px solid var(--ink);
+  padding-block: var(--space-5);
+}
+
+.metric-health-list > article {
+  display: grid;
+  grid-template-columns: 4fr 4fr 4fr;
+  gap: 2rem;
+  border-bottom: 1px solid var(--line);
+  padding-block: 2rem;
+}
+.metric-health-list h2 {
+  margin: 0.7rem 0 0;
+  font-size: 2rem;
+}
+.metric-health-list dl {
+  margin: 0;
+}
+.metric-health-list dl div {
+  margin-bottom: 0.8rem;
+}
+.metric-health-list dt {
+  font: 500 0.68rem/1.4 var(--mono);
+  text-transform: uppercase;
+}
+.metric-health-list dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.metric-health-list form .button {
+  margin-top: 1rem;
+}
+.status-healthy {
+  border-color: var(--green);
+  color: var(--green);
+}
+.status-delayed {
+  border-color: #835b18;
+  color: #835b18;
+}
+.status-stale,
+.status-disabled {
+  border-color: var(--warning);
+  color: var(--warning);
 }
 .preview-banner {
   position: sticky;
@@ -778,19 +962,28 @@ label small {
     padding-block: 1rem;
   }
   .project-meta,
-  .metric-unavailable {
+  .metric-unavailable,
+  .momentum-summary {
     grid-column: 3;
     justify-self: start;
     text-align: left;
   }
   .editorial-feature,
   .project-hero,
-  .auth-page {
+  .auth-page,
+  .momentum-panel,
+  .metric-health-list > article {
     grid-template-columns: 1fr;
   }
   .feature-art {
     min-height: 280px;
     writing-mode: horizontal-tb;
+  }
+  .search-form {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .search-input {
+    grid-column: 1 / -1;
   }
   .category-links {
     grid-template-columns: repeat(2, 1fr);
@@ -835,6 +1028,19 @@ label small {
   .field-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+  }
+  .search-form,
+  .trend-controls,
+  .landing-results {
+    grid-template-columns: 1fr;
+  }
+  .search-input,
+  .landing-results > .eyebrow {
+    grid-column: auto;
+  }
+  .trend-controls fieldset {
+    flex-direction: column;
+    gap: 0;
   }
   .project-section,
   .category-index,

@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { requireEditor } from '../features/editorial/auth.server'
 import { projectDraftSchema } from '../features/editorial/model'
 import { saveDraft, setPublication } from '../features/editorial/store.server'
+import { setRepositoryExclusion } from '../features/github/metrics.server'
 
 type RpcContext = { request: Request }
 
@@ -51,6 +52,24 @@ export const appRouter = {
         setPublication(
           input.projectId,
           input.publish,
+          input.reason,
+          context.editor,
+        ),
+      ),
+  },
+  metrics: {
+    setRepositoryExclusion: editorProcedure
+      .input(
+        z.object({
+          repositoryId: z.string().uuid(),
+          excluded: z.boolean(),
+          reason: z.string().trim().min(8).max(300),
+        }),
+      )
+      .handler(({ input, context }) =>
+        setRepositoryExclusion(
+          input.repositoryId,
+          input.excluded,
           input.reason,
           context.editor,
         ),

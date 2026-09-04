@@ -50,11 +50,11 @@ function Home() {
             guidance—with sources, costs, and tradeoffs in view.
           </p>
           <div className="hero-actions">
-            <a className="button" href="#projects">
-              Browse the edit
+            <a className="button" href="/trending">
+              Explore trending
             </a>
-            <a className="text-link" href="/ai-tools">
-              Explore AI tools →
+            <a className="text-link" href="/search">
+              Search the field guide →
             </a>
           </div>
         </section>
@@ -65,28 +65,29 @@ function Home() {
             <h2 id="today">Useful signals, human judgment.</h2>
           </div>
           <p>
-            Momentum metrics arrive in Phase 2. For now, every placement is an
-            explicit editorial recommendation—not a popularity score dressed up
-            as one.
+            GitHub momentum is calculated from stored 7- and 30-day aggregate
+            observations. Editorial recommendations remain a separate signal.
           </p>
         </section>
 
         <section className="shell project-section" id="projects">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">Projects to evaluate</p>
-              <h2>Start with the shortlist.</h2>
+              <p className="eyebrow">Trending now</p>
+              <h2>What is moving.</h2>
             </div>
-            <p>12 sourced projects across all six areas of the field guide.</p>
+            <p>Transparent evidence, complete windows only.</p>
           </div>
           <div className="trending-list">
-            {data.latest.map((project, index) => (
-              <TrendingRow
-                key={project.id}
-                project={project}
-                rank={index + 1}
-              />
-            ))}
+            {(data.trending.length ? data.trending : data.latest).map(
+              (project, index) => (
+                <TrendingRow
+                  key={project.id}
+                  project={project}
+                  rank={index + 1}
+                />
+              ),
+            )}
           </div>
         </section>
 
