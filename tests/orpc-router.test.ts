@@ -4,7 +4,9 @@ import { describe, expect, it } from 'vitest'
 import { appRouter } from '../src/orpc/router'
 
 describe('application procedures', () => {
-  const client = createRouterClient(appRouter, { context: {} })
+  const client = createRouterClient(appRouter, {
+    context: { request: new Request('http://localhost/api/rpc') },
+  })
 
   it('returns server health', async () => {
     await expect(client.system.health()).resolves.toMatchObject({

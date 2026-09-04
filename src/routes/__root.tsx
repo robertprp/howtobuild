@@ -1,9 +1,7 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
-
 import appCss from '../styles.css?url'
 import { Providers } from '../components/providers'
+import { SiteHeader } from '../components/site-chrome'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -16,12 +14,11 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'HowToBuild.dev — Phase 0 spike',
+        title: 'HowToBuild.dev',
       },
       {
         name: 'description',
-        content:
-          'Production-shaped Phase 0 architecture spike for HowToBuild.dev.',
+        content: 'A sourced editorial field guide to modern developer tools.',
       },
     ],
     links: [
@@ -42,18 +39,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <Providers>{children}</Providers>
-        <TanStackDevtools
-          config={{
-            position: 'bottom-right',
-          }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
+        <Providers>
+          <a className="skip-link" href="#main-content">
+            Skip to content
+          </a>
+          <SiteHeader />
+          <div id="main-content">{children}</div>
+        </Providers>
         <Scripts />
       </body>
     </html>
@@ -66,7 +58,7 @@ function NotFound() {
       <p className="eyebrow">404 · Not found</p>
       <h1>The page you requested is outside this field guide.</h1>
       <a className="button" href="/">
-        Return to Phase 0
+        Return to the field guide
       </a>
     </main>
   )

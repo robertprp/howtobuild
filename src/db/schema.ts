@@ -116,6 +116,240 @@ export const repositories = pgTable(
   ],
 )
 
+export const categories = pgTable('categories', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  slug: text('slug').notNull().unique(),
+  name: text('name').notNull(),
+  description: text('description').notNull(),
+  accent: text('accent').notNull(),
+  sortOrder: integer('sort_order').notNull(),
+})
+
+export const facets = pgTable(
+  'facets',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    kind: text('kind').notNull(),
+    slug: text('slug').notNull(),
+    name: text('name').notNull(),
+  },
+  (table) => [uniqueIndex('facet_kind_slug_idx').on(table.kind, table.slug)],
+)
+
+export const projects = pgTable(
+  'projects',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    slug: text('slug').notNull().unique(),
+    name: text('name').notNull(),
+    shortDescription: text('short_description').notNull(),
+    editorialDescription: text('editorial_description').notNull(),
+    whyInteresting: text('why_interesting').notNull(),
+    bestFor: jsonb('best_for').$type<string[]>().notNull(),
+    notIdealFor: jsonb('not_ideal_for').$type<string[]>().notNull(),
+    projectType: text('project_type').notNull(),
+    categoryId: uuid('category_id')
+      .notNull()
+      .references(() => categories.id),
+    status: text('status').default('draft').notNull(),
+    openSource: boolean('open_source').default(false).notNull(),
+    license: text('license'),
+    selfHostable: boolean('self_hostable').default(false).notNull(),
+    pricingLabel: text('pricing_label').default('Unknown').notNull(),
+    pricingSummary: text('pricing_summary').notNull(),
+    recommended: boolean('recommended').default(false).notNull(),
+    worthWatching: boolean('worth_watching').default(false).notNull(),
+    createdBy: text('created_by').references(() => user.id),
+    updatedBy: text('updated_by').references(() => user.id),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+    reviewedAt: timestamp('reviewed_at', { withTimezone: true }),
+    publishedAt: timestamp('published_at', { withTimezone: true }),
+  },
+  (table) => [
+    index('project_category_status_idx').on(table.categoryId, table.status),
+  ],
+)
+
+export const projectLinks = pgTable(
+  'project_links',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id, { onDelete: 'cascade' }),
+    kind: text('kind').notNull(),
+    url: text('url').notNull(),
+    lastSuccessfulCheckAt: timestamp('last_successful_check_at', {
+      withTimezone: true,
+    }),
+    redirectTarget: text('redirect_target'),
+    failureCount: integer('failure_count').default(0).notNull(),
+  },
+  (table) => [
+    uniqueIndex('project_link_kind_idx').on(table.projectId, table.kind),
+  ],
+)
+
+export const projectRepositories = pgTable(
+  'project_repositories',
+  {
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id, { onDelete: 'cascade' }),
+    repositoryId: uuid('repository_id')
+      .notNull()
+      .references(() => repositories.id, { onDelete: 'cascade' }),
+    isDefault: boolean('is_default').default(false).notNull(),
+  },
+  (table) => [
+    uniqueIndex('project_repository_idx').on(
+      table.projectId,
+      table.repositoryId,
+    ),
+  ],
+)
+
+export const projectSources = pgTable('project_sources', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  projectId: uuid('project_id')
+    .notNull()
+    .references(() => projects.id, { onDelete: 'cascade' }),
+  claim: text('claim').notNull(),
+  sourceType: text('source_type').notNull(),
+  url: text('url').notNull(),
+  checkedAt: timestamp('checked_at', { withTimezone: true }).notNull(),
+  checkedBy: text('checked_by'),
+})
+
+export const projectFacets = pgTable(
+  'project_facets',
+  {
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id, { onDelete: 'cascade' }),
+    facetId: uuid('facet_id')
+      .notNull()
+      .references(() => facets.id, { onDelete: 'cascade' }),
+  },
+  (table) => [
+    uniqueIndex('project_facet_idx').on(table.projectId, table.facetId),
+  ],
+)
+
+export const assets = pgTable('assets', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  kind: text('kind').notNull(),
+  storageKey: text('storage_key').notNull().unique(),
+  sourceUrl: text('source_url').notNull(),
+  creator: text('creator'),
+  license: text('license').notNull(),
+  capturedAt: timestamp('captured_at', { withTimezone: true }).notNull(),
+  altText: text('alt_text').notNull(),
+  focalX: integer('focal_x').default(50).notNull(),
+  focalY: integer('focal_y').default(50).notNull(),
+  width: integer('width'),
+  height: integer('height'),
+  checksum: text('checksum').notNull(),
+  manifest: jsonb('manifest').notNull(),
+})
+
+export const projectAssets = pgTable(
+  'project_assets',
+  {
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id, { onDelete: 'cascade' }),
+    assetId: uuid('asset_id')
+      .notNull()
+      .references(() => assets.id, { onDelete: 'cascade' }),
+    role: text('role').notNull(),
+  },
+  (table) => [
+    uniqueIndex('project_asset_role_idx').on(table.projectId, table.role),
+  ],
+)
+
+export const editorInvites = pgTable('editor_invites', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  email: text('email').notNull().unique(),
+  role: text('role').default('editor').notNull(),
+  invitedBy: text('invited_by').references(() => user.id),
+  invitedAt: timestamp('invited_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  acceptedAt: timestamp('accepted_at', { withTimezone: true }),
+})
+
+export const editorRoles = pgTable('editor_roles', {
+  userId: text('user_id')
+    .primaryKey()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  role: text('role').notNull(),
+  grantedBy: text('granted_by').references(() => user.id),
+  grantedAt: timestamp('granted_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+})
+
+export const editorialRevisions = pgTable(
+  'editorial_revisions',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id, { onDelete: 'cascade' }),
+    revision: integer('revision').notNull(),
+    snapshot: jsonb('snapshot').notNull(),
+    reason: text('reason').notNull(),
+    actorId: text('actor_id')
+      .notNull()
+      .references(() => user.id),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex('editorial_revision_project_number_idx').on(
+      table.projectId,
+      table.revision,
+    ),
+  ],
+)
+
+export const auditEvents = pgTable('audit_events', {
+  id: bigint('id', { mode: 'number' }).generatedAlwaysAsIdentity().primaryKey(),
+  actorId: text('actor_id')
+    .notNull()
+    .references(() => user.id),
+  projectId: uuid('project_id').references(() => projects.id, {
+    onDelete: 'set null',
+  }),
+  action: text('action').notNull(),
+  reason: text('reason').notNull(),
+  before: jsonb('before'),
+  after: jsonb('after'),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+})
+
+export const projectRedirects = pgTable('project_redirects', {
+  oldSlug: text('old_slug').primaryKey(),
+  projectId: uuid('project_id')
+    .notNull()
+    .references(() => projects.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+})
+
 export const githubSnapshots = pgTable(
   'github_snapshots',
   {
@@ -170,9 +404,23 @@ export const accountRelations = relations(account, ({ one }) => ({
 export const schema = {
   account,
   accountRelations,
+  assets,
+  auditEvents,
+  categories,
   collectorLeases,
+  editorialRevisions,
+  editorInvites,
+  editorRoles,
+  facets,
   githubSnapshots,
   phaseZeroChecks,
+  projectAssets,
+  projectFacets,
+  projectLinks,
+  projectRedirects,
+  projectRepositories,
+  projects,
+  projectSources,
   repositories,
   session,
   sessionRelations,

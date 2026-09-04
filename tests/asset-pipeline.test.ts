@@ -26,4 +26,5 @@ describe('asset derivative pipeline', () => {
       readFile(join(output, manifest.derivatives[0].filename)),
     ).resolves.toBeTruthy()
   })
+
 })

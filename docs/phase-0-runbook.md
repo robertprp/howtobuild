@@ -43,7 +43,7 @@ The second run should send the saved ETag. A `304` updates sync health without i
 Asset transform and optional upload:
 
 ```sh
-pnpm asset:process tests/fixtures/phase-zero-logo.svg logo
+pnpm asset:process tests/fixtures/phase-zero-logo.svg logo .generated-assets https://example.com/local-fixture "Test fixture only"
 ```
 
 Without Supabase Storage variables this writes local derivatives plus a provenance manifest. With the variables set it also uploads them under `phase-zero/`.
