@@ -1,7 +1,9 @@
 import { betterAuth } from 'better-auth'
+import { APIError } from 'better-auth/api'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { emailOTP } from 'better-auth/plugins'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
+import { and, eq, gt } from 'drizzle-orm'
 
 import { getDb } from '../db/client.server'
 import * as schema from '../db/schema'
@@ -44,6 +46,26 @@ export const auth = betterAuth({
   },
   advanced: {
     useSecureCookies: process.env.NODE_ENV === 'production',
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (newUser) => {
+          const invite = await getDb().query.editorInvites.findFirst({
+            where: and(
+              eq(schema.editorInvites.email, newUser.email.toLowerCase()),
+              gt(schema.editorInvites.expiresAt, new Date()),
+            ),
+          })
+          if (!invite || invite.acceptedAt) {
+            throw new APIError('FORBIDDEN', {
+              message: 'This editorial workspace is invite-only.',
+            })
+          }
+          return { data: { ...newUser, email: newUser.email.toLowerCase() } }
+        },
+      },
+    },
   },
   plugins: [
     emailOTP({

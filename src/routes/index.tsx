@@ -1,119 +1,148 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useMutation, useQuery } from '@tanstack/react-query'
 
-import { orpc } from '../lib/orpc-client'
+import {
+  EditorialFeature,
+  StackItemExample,
+  TrendingRow,
+} from '../components/project-views'
+import { SiteFooter } from '../components/site-chrome'
+import { getHomeData } from '../features/editorial/catalog.functions'
+import type { PublicProject } from '../features/editorial/model'
 
-export const Route = createFileRoute('/')({ component: Home })
+export const Route = createFileRoute('/')({
+  loader: () => getHomeData(),
+  head: () => ({
+    meta: [
+      { title: 'HowToBuild.dev — A field guide to modern developer tools' },
+      {
+        name: 'description',
+        content:
+          'Curated frameworks, tools, AI products, and practical editorial guidance for modern software development.',
+      },
+      {
+        property: 'og:title',
+        content: 'HowToBuild.dev — Discover what developers build with now',
+      },
+      {
+        property: 'og:description',
+        content:
+          'An independent, sourced field guide to modern developer tools.',
+      },
+    ],
+    links: [{ rel: 'canonical', href: 'https://howtobuild.dev/' }],
+  }),
+  component: Home,
+})
 
 function Home() {
-  const health = useQuery({
-    ...orpc.system.health.queryOptions(),
-    enabled: false,
-  })
-  const echo = useMutation(orpc.system.echo.mutationOptions())
+  const data = Route.useLoaderData()
+  const lead: PublicProject | undefined =
+    data.featured.at(0) ?? data.latest.at(0)
 
   return (
-    <main>
-      <section className="hero shell">
-        <div>
-          <p className="eyebrow">HowToBuild.dev · Phase 0</p>
-          <h1>The risky seams, made testable.</h1>
+    <>
+      <main>
+        <section className="home-hero shell">
+          <p className="eyebrow">Independent developer field guide · 2026</p>
+          <h1>Discover what developers are building with now.</h1>
           <p className="lede">
-            A production-shaped spike for SSR, oRPC, Better Auth, Supabase
-            Postgres, scheduled GitHub collection, and managed assets.
+            Curated frameworks, tools, AI products, and production-minded
+            guidance—with sources, costs, and tradeoffs in view.
           </p>
-          <div className="actions">
-            <button className="button" onClick={() => health.refetch()}>
-              Test oRPC query
-            </button>
-            <button
-              className="button secondary"
-              onClick={() => echo.mutate({ message: 'Phase zero is alive' })}
-            >
-              Test oRPC mutation
-            </button>
+          <div className="hero-actions">
+            <a className="button" href="#projects">
+              Browse the edit
+            </a>
+            <a className="text-link" href="/ai-tools">
+              Explore AI tools →
+            </a>
           </div>
-          <output className="result" aria-live="polite">
-            {health.data
-              ? `Query: ${health.data.runtime} responded at ${health.data.checkedAt}`
-              : echo.data
-                ? `Mutation: ${echo.data.normalized}`
-                : health.error || echo.error
-                  ? `Request failed: ${(health.error ?? echo.error)?.message}`
-                  : 'Run either check to exercise the typed Fetch adapter.'}
-          </output>
-        </div>
-        <aside className="signal" aria-label="Phase status">
-          <span>Vertical slice</span>
-          <strong>Ready locally</strong>
-          <small>
-            Provider checks activate when environment values are supplied.
-          </small>
-        </aside>
-      </section>
+        </section>
 
-      <section className="shell section">
-        <p className="eyebrow">Seam map</p>
-        <div className="grid">
-          {[
-            [
-              'SSR + streaming',
-              'TanStack Start on Nitro, with a Vercel production preset.',
-            ],
-            [
-              'Typed application API',
-              'oRPC query and mutation through a catch-all server route.',
-            ],
-            [
-              'Identity',
-              'Better Auth, social providers, hashed email OTPs, and secure cookies.',
-            ],
-            [
-              'Source of truth',
-              'Drizzle migrations against Supabase Postgres via a small pool.',
-            ],
-            [
-              'Signals',
-              'Authenticated GitHub aggregate snapshots with ETag reuse and a DB lease.',
-            ],
-            [
-              'Assets',
-              'Sharp derivatives uploaded to a public Supabase Storage bucket.',
-            ],
-          ].map(([title, copy], index) => (
-            <article className="card" key={title}>
-              <span>0{index + 1}</span>
-              <h2>{title}</h2>
-              <p>{copy}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+        <section className="shell editorial-intro" aria-labelledby="today">
+          <div>
+            <p className="eyebrow">The current edit</p>
+            <h2 id="today">Useful signals, human judgment.</h2>
+          </div>
+          <p>
+            Momentum metrics arrive in Phase 2. For now, every placement is an
+            explicit editorial recommendation—not a popularity score dressed up
+            as one.
+          </p>
+        </section>
 
-      <section className="shell decisions">
-        <div>
-          <p className="eyebrow">Provider decisions</p>
-          <h2>Small, replaceable boundaries.</h2>
-        </div>
-        <dl>
-          <div>
-            <dt>Runtime</dt>
-            <dd>Vercel Node / Nitro</dd>
+        <section className="shell project-section" id="projects">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">Projects to evaluate</p>
+              <h2>Start with the shortlist.</h2>
+            </div>
+            <p>12 sourced projects across all six areas of the field guide.</p>
           </div>
-          <div>
-            <dt>Database</dt>
-            <dd>Supabase Postgres + Supavisor</dd>
+          <div className="trending-list">
+            {data.latest.map((project, index) => (
+              <TrendingRow
+                key={project.id}
+                project={project}
+                rank={index + 1}
+              />
+            ))}
           </div>
-          <div>
-            <dt>Email</dt>
-            <dd>Resend</dd>
+        </section>
+
+        {lead ? (
+          <section className="shell feature-section">
+            <EditorialFeature project={lead} />
+          </section>
+        ) : null}
+
+        <section className="shell category-index" aria-labelledby="categories">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">Six fields</p>
+              <h2 id="categories">Browse by responsibility.</h2>
+            </div>
           </div>
-          <div>
-            <dt>Images</dt>
-            <dd>Supabase Storage</dd>
+          <div className="category-links">
+            {data.categories.map((category, index) => (
+              <a
+                href={`/${category.slug}`}
+                key={category.id}
+                style={
+                  {
+                    '--category-accent': category.accent,
+                  } as React.CSSProperties
+                }
+              >
+                <span>{String(index + 1).padStart(2, '0')}</span>
+                <strong>{category.name}</strong>
+                <p>{category.description}</p>
+              </a>
+            ))}
           </div>
-        </dl>
-      </section>
-    </main>
+        </section>
+
+        {lead ? (
+          <section className="shell variant-proof" aria-labelledby="variants">
+            <div className="section-heading">
+              <div>
+                <p className="eyebrow">Designed for the decision</p>
+                <h2 id="variants">Different content, different rhythm.</h2>
+              </div>
+            </div>
+            <div className="variant-grid">
+              <StackItemExample project={lead} />
+              <a className="search-result" href={`/projects/${lead.slug}`}>
+                <span className="eyebrow">Search result · exact name</span>
+                <strong>{lead.name}</strong>
+                <span>{lead.shortDescription}</span>
+                <span className="canonical">/projects/{lead.slug}</span>
+              </a>
+            </div>
+          </section>
+        ) : null}
+      </main>
+      <SiteFooter lastUpdated={data.lastEditorialUpdate} />
+    </>
   )
 }
