@@ -27,7 +27,8 @@ export function SiteHeader() {
               ))}
             </div>
           </details>
-          <a href="/ai-tools">AI tools</a>
+          <a href="/trending">Trending</a>
+          <a href="/search">Search</a>
           <a href="/admin">Editor</a>
         </nav>
       </div>

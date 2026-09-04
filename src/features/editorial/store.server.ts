@@ -1,17 +1,22 @@
-import { and, asc, desc, eq, max } from 'drizzle-orm'
+import { and, asc, desc, eq, inArray, max } from 'drizzle-orm'
 
 import { getDb } from '../../db/client.server'
 import {
   auditEvents,
   categories,
   editorialRevisions,
+  facets,
+  projectFacets,
   projectLinks,
+  projectMomentum,
+  projectRepositories,
   projectRedirects,
   projects,
   projectSources,
+  repositories,
 } from '../../db/schema'
 import type { EditorIdentity } from './auth.server'
-import { validatePublishable } from './model'
+import { metricHealth, validatePublishable } from './model'
 import type { ProjectDraft, PublicProject } from './model'
 
 type Db = ReturnType<typeof getDb>
@@ -20,48 +25,133 @@ function iso(date: Date | null) {
   return date?.toISOString() ?? null
 }
 
-async function hydrateProject(
+async function hydrateProjects(
   db: Db,
-  project: typeof projects.$inferSelect,
-): Promise<PublicProject> {
-  const [category, links, sources] = await Promise.all([
-    db.query.categories.findFirst({
-      where: eq(categories.id, project.categoryId),
-    }),
-    db
-      .select({ kind: projectLinks.kind, url: projectLinks.url })
-      .from(projectLinks)
-      .where(eq(projectLinks.projectId, project.id)),
-    db
-      .select({
-        claim: projectSources.claim,
-        sourceType: projectSources.sourceType,
-        url: projectSources.url,
-        checkedAt: projectSources.checkedAt,
-        checkedBy: projectSources.checkedBy,
-      })
-      .from(projectSources)
-      .where(eq(projectSources.projectId, project.id)),
-  ])
-  if (!category) throw new Error('Project category is missing')
-  return {
-    ...project,
-    bestFor: project.bestFor,
-    notIdealFor: project.notIdealFor,
-    publishedAt: iso(project.publishedAt),
-    updatedAt: project.updatedAt.toISOString(),
-    category: {
-      id: category.id,
-      slug: category.slug,
-      name: category.name,
-      accent: category.accent,
-    },
-    links,
-    sources: sources.map((source) => ({
-      ...source,
-      checkedAt: source.checkedAt.toISOString(),
-    })),
-  }
+  projectRows: Array<typeof projects.$inferSelect>,
+): Promise<PublicProject[]> {
+  if (!projectRows.length) return []
+  const projectIds = projectRows.map((project) => project.id)
+  const categoryIds = [
+    ...new Set(projectRows.map((project) => project.categoryId)),
+  ]
+  const [categoryRows, links, sources, assignedFacets, momentumRows] =
+    await Promise.all([
+      db.select().from(categories).where(inArray(categories.id, categoryIds)),
+      db
+        .select({
+          projectId: projectLinks.projectId,
+          kind: projectLinks.kind,
+          url: projectLinks.url,
+        })
+        .from(projectLinks)
+        .where(inArray(projectLinks.projectId, projectIds)),
+      db
+        .select({
+          projectId: projectSources.projectId,
+          claim: projectSources.claim,
+          sourceType: projectSources.sourceType,
+          url: projectSources.url,
+          checkedAt: projectSources.checkedAt,
+          checkedBy: projectSources.checkedBy,
+        })
+        .from(projectSources)
+        .where(inArray(projectSources.projectId, projectIds)),
+      db
+        .select({
+          projectId: projectFacets.projectId,
+          id: facets.id,
+          kind: facets.kind,
+          slug: facets.slug,
+          name: facets.name,
+        })
+        .from(projectFacets)
+        .innerJoin(facets, eq(projectFacets.facetId, facets.id))
+        .where(inArray(projectFacets.projectId, projectIds))
+        .orderBy(asc(facets.kind), asc(facets.name)),
+      db
+        .select({
+          projectId: projectMomentum.projectId,
+          momentum: projectMomentum,
+          repository: repositories,
+        })
+        .from(projectMomentum)
+        .innerJoin(
+          projectRepositories,
+          eq(projectMomentum.projectId, projectRepositories.projectId),
+        )
+        .innerJoin(
+          repositories,
+          eq(projectRepositories.repositoryId, repositories.id),
+        )
+        .where(
+          and(
+            inArray(projectMomentum.projectId, projectIds),
+            eq(projectRepositories.isDefault, true),
+          ),
+        )
+        .orderBy(desc(projectMomentum.calculatedAt)),
+    ])
+  const categoryById = new Map(
+    categoryRows.map((category) => [category.id, category]),
+  )
+  const latestMomentum = new Map<string, (typeof momentumRows)[number]>()
+  for (const row of momentumRows)
+    if (!latestMomentum.has(row.projectId))
+      latestMomentum.set(row.projectId, row)
+
+  return projectRows.map((project) => {
+    const category = categoryById.get(project.categoryId)
+    if (!category) throw new Error('Project category is missing')
+    const metric = latestMomentum.get(project.id)
+    return {
+      ...project,
+      bestFor: project.bestFor,
+      notIdealFor: project.notIdealFor,
+      publishedAt: iso(project.publishedAt),
+      updatedAt: project.updatedAt.toISOString(),
+      category: {
+        id: category.id,
+        slug: category.slug,
+        name: category.name,
+        accent: category.accent,
+      },
+      links: links
+        .filter((link) => link.projectId === project.id)
+        .map(({ kind, url }) => ({ kind, url })),
+      facets: assignedFacets
+        .filter((facet) => facet.projectId === project.id)
+        .map(({ id, kind, slug, name }) => ({ id, kind, slug, name })),
+      momentum: metric
+        ? {
+            stars: metric.momentum.stars,
+            absolute7d: metric.momentum.absolute7d,
+            absolute30d: metric.momentum.absolute30d,
+            relative7d: metric.momentum.relative7d,
+            relative30d: metric.momentum.relative30d,
+            score: metric.momentum.score,
+            confidence: metric.momentum.confidence as
+              'early' | 'weekly' | 'complete',
+            windowStart: iso(metric.momentum.windowStart),
+            windowEnd: metric.momentum.windowEnd.toISOString(),
+            anomaly: metric.momentum.anomaly,
+            algorithmVersion: metric.momentum.algorithmVersion,
+            health: metricHealth(metric.repository),
+          }
+        : null,
+      sources: sources
+        .filter((source) => source.projectId === project.id)
+        .map(({ projectId: _projectId, ...source }) => ({
+          ...source,
+          checkedAt: source.checkedAt.toISOString(),
+        })),
+    }
+  })
+}
+
+async function hydrateProject(db: Db, project: typeof projects.$inferSelect) {
+  const hydrated = (await hydrateProjects(db, [project])).at(0)
+  if (!hydrated) throw new Error('Project could not be hydrated')
+  return hydrated
 }
 
 export async function listCategories() {
@@ -83,7 +173,10 @@ export async function listPublishedProjects(categorySlug?: string) {
         : eq(projects.status, 'published'),
     )
     .orderBy(desc(projects.recommended), asc(projects.name))
-  return Promise.all(rows.map(({ project }) => hydrateProject(db, project)))
+  return hydrateProjects(
+    db,
+    rows.map(({ project }) => project),
+  )
 }
 
 export async function findProjectBySlug(slug: string, includeDraft = false) {
@@ -112,7 +205,7 @@ export async function listEditorProjects() {
     .select()
     .from(projects)
     .orderBy(desc(projects.updatedAt))
-  return Promise.all(rows.map((project) => hydrateProject(db, project)))
+  return hydrateProjects(db, rows)
 }
 
 async function revisionNumber(

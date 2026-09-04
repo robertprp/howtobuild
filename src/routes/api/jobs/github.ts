@@ -1,10 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-import { collectGitHubRepository } from '../../../features/github/collector'
-import {
-  postgresSnapshotStore,
-  withCollectorLease,
-} from '../../../features/github/store.server'
+import { withCollectorLease } from '../../../features/github/store.server'
+import { collectCatalogRepositories } from '../../../features/github/sync.server'
 
 export const Route = createFileRoute('/api/jobs/github')({
   server: {
@@ -25,10 +22,9 @@ export const Route = createFileRoute('/api/jobs/github')({
             { status: 503 },
           )
 
-        const coordinate = process.env.GITHUB_REPOSITORY ?? 'tanstack/router'
         try {
           const result = await withCollectorLease('github-collector', () =>
-            collectGitHubRepository(coordinate, token, postgresSnapshotStore),
+            collectCatalogRepositories(token),
           )
           return Response.json({ ok: true, result })
         } catch (error) {

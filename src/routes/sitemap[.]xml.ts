@@ -37,6 +37,21 @@ export const Route = createFileRoute('/sitemap.xml')({
             path: `/${category.slug}`,
             lastmod: undefined,
           })),
+          { path: '/trending', lastmod: undefined },
+          { path: '/trending?period=month', lastmod: undefined },
+          ...Array.from(
+            new Map(
+              allProjects.flatMap((project) =>
+                project.facets.map((facet) => [
+                  `${project.category.slug}/${facet.slug}`,
+                  {
+                    path: `/${project.category.slug}/${facet.slug}`,
+                    lastmod: undefined,
+                  },
+                ]),
+              ),
+            ).values(),
+          ),
           ...allProjects.map((project) => ({
             path: `/projects/${project.slug}`,
             lastmod: project.updatedAt.slice(0, 10),
