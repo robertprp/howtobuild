@@ -14,6 +14,8 @@ import {
   projects,
   projectSources,
   repositories,
+  stackItems,
+  stacks,
 } from '../../db/schema'
 import type { EditorIdentity } from './auth.server'
 import { metricHealth, validatePublishable } from './model'
@@ -34,63 +36,85 @@ async function hydrateProjects(
   const categoryIds = [
     ...new Set(projectRows.map((project) => project.categoryId)),
   ]
-  const [categoryRows, links, sources, assignedFacets, momentumRows] =
-    await Promise.all([
-      db.select().from(categories).where(inArray(categories.id, categoryIds)),
-      db
-        .select({
-          projectId: projectLinks.projectId,
-          kind: projectLinks.kind,
-          url: projectLinks.url,
-        })
-        .from(projectLinks)
-        .where(inArray(projectLinks.projectId, projectIds)),
-      db
-        .select({
-          projectId: projectSources.projectId,
-          claim: projectSources.claim,
-          sourceType: projectSources.sourceType,
-          url: projectSources.url,
-          checkedAt: projectSources.checkedAt,
-          checkedBy: projectSources.checkedBy,
-        })
-        .from(projectSources)
-        .where(inArray(projectSources.projectId, projectIds)),
-      db
-        .select({
-          projectId: projectFacets.projectId,
-          id: facets.id,
-          kind: facets.kind,
-          slug: facets.slug,
-          name: facets.name,
-        })
-        .from(projectFacets)
-        .innerJoin(facets, eq(projectFacets.facetId, facets.id))
-        .where(inArray(projectFacets.projectId, projectIds))
-        .orderBy(asc(facets.kind), asc(facets.name)),
-      db
-        .select({
-          projectId: projectMomentum.projectId,
-          momentum: projectMomentum,
-          repository: repositories,
-        })
-        .from(projectMomentum)
-        .innerJoin(
-          projectRepositories,
-          eq(projectMomentum.projectId, projectRepositories.projectId),
-        )
-        .innerJoin(
-          repositories,
-          eq(projectRepositories.repositoryId, repositories.id),
-        )
-        .where(
-          and(
-            inArray(projectMomentum.projectId, projectIds),
-            eq(projectRepositories.isDefault, true),
-          ),
-        )
-        .orderBy(desc(projectMomentum.calculatedAt)),
-    ])
+  const [
+    categoryRows,
+    links,
+    sources,
+    assignedFacets,
+    momentumRows,
+    stackRows,
+  ] = await Promise.all([
+    db.select().from(categories).where(inArray(categories.id, categoryIds)),
+    db
+      .select({
+        projectId: projectLinks.projectId,
+        kind: projectLinks.kind,
+        url: projectLinks.url,
+      })
+      .from(projectLinks)
+      .where(inArray(projectLinks.projectId, projectIds)),
+    db
+      .select({
+        projectId: projectSources.projectId,
+        claim: projectSources.claim,
+        sourceType: projectSources.sourceType,
+        url: projectSources.url,
+        checkedAt: projectSources.checkedAt,
+        checkedBy: projectSources.checkedBy,
+      })
+      .from(projectSources)
+      .where(inArray(projectSources.projectId, projectIds)),
+    db
+      .select({
+        projectId: projectFacets.projectId,
+        id: facets.id,
+        kind: facets.kind,
+        slug: facets.slug,
+        name: facets.name,
+      })
+      .from(projectFacets)
+      .innerJoin(facets, eq(projectFacets.facetId, facets.id))
+      .where(inArray(projectFacets.projectId, projectIds))
+      .orderBy(asc(facets.kind), asc(facets.name)),
+    db
+      .select({
+        projectId: projectMomentum.projectId,
+        momentum: projectMomentum,
+        repository: repositories,
+      })
+      .from(projectMomentum)
+      .innerJoin(
+        projectRepositories,
+        eq(projectMomentum.projectId, projectRepositories.projectId),
+      )
+      .innerJoin(
+        repositories,
+        eq(projectRepositories.repositoryId, repositories.id),
+      )
+      .where(
+        and(
+          inArray(projectMomentum.projectId, projectIds),
+          eq(projectRepositories.isDefault, true),
+        ),
+      )
+      .orderBy(desc(projectMomentum.calculatedAt)),
+    db
+      .select({
+        projectId: stackItems.projectId,
+        slug: stacks.slug,
+        name: stacks.name,
+        responsibility: stackItems.responsibility,
+      })
+      .from(stackItems)
+      .innerJoin(stacks, eq(stackItems.stackId, stacks.id))
+      .where(
+        and(
+          inArray(stackItems.projectId, projectIds),
+          eq(stacks.status, 'published'),
+        ),
+      )
+      .orderBy(asc(stacks.name)),
+  ])
   const categoryById = new Map(
     categoryRows.map((category) => [category.id, category]),
   )
@@ -138,6 +162,9 @@ async function hydrateProjects(
             health: metricHealth(metric.repository),
           }
         : null,
+      stacks: stackRows
+        .filter((stack) => stack.projectId === project.id)
+        .map(({ projectId: _projectId, ...stack }) => stack),
       sources: sources
         .filter((source) => source.projectId === project.id)
         .map(({ projectId: _projectId, ...source }) => ({

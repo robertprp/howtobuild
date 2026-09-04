@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { getRequest, setResponseHeaders } from '@tanstack/react-start/server'
 import { z } from 'zod'
 import { listMetricHealth } from '../github/metrics.server'
+import { listPublishedStacks } from '../stacks/store.server'
 
 import { requireEditor } from './auth.server'
 import {
@@ -26,9 +27,10 @@ const privateHeaders = new Headers({
 export const getHomeData = createServerFn({ method: 'GET' }).handler(
   async () => {
     setResponseHeaders(publicHeaders)
-    const [allCategories, allProjects] = await Promise.all([
+    const [allCategories, allProjects, allStacks] = await Promise.all([
       listCategories(),
       listPublishedProjects(),
+      listPublishedStacks(),
     ])
     return {
       categories: allCategories,
@@ -49,6 +51,7 @@ export const getHomeData = createServerFn({ method: 'GET' }).handler(
         .filter((project) => project.worthWatching)
         .slice(0, 3),
       latest: allProjects.slice(0, 8),
+      stacks: allStacks.slice(0, 4),
       lastEditorialUpdate:
         allProjects
           .map((project) => project.publishedAt)

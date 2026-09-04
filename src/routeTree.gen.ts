@@ -11,17 +11,25 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CategoryRouteImport } from './routes/$category'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as CorrectionsRouteImport } from './routes/corrections'
+import { Route as MethodologyRouteImport } from './routes/methodology'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TrendingRouteImport } from './routes/trending'
 import { Route as CategoryEcosystemRouteImport } from './routes/$category.$ecosystem'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminMetricsRouteImport } from './routes/admin/metrics'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
+import { Route as ApiTelemetryRouteImport } from './routes/api/telemetry'
 import { Route as PreviewProjectRouteImport } from './routes/preview/$project'
 import { Route as ProjectsProjectRouteImport } from './routes/projects/$project'
+import { Route as StacksIndexRouteImport } from './routes/stacks/index'
+import { Route as StacksStackRouteImport } from './routes/stacks/$stack'
 import { Route as AdminProjectsProjectRouteImport } from './routes/admin/projects/$project'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiJobsGithubRouteImport } from './routes/api/jobs/github'
@@ -35,6 +43,26 @@ const IndexRoute = IndexRouteImport.update({
 const CategoryRoute = CategoryRouteImport.update({
   id: '/$category',
   path: '/$category',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CorrectionsRoute = CorrectionsRouteImport.update({
+  id: '/corrections',
+  path: '/corrections',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MethodologyRoute = MethodologyRouteImport.update({
+  id: '/methodology',
+  path: '/methodology',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
@@ -55,6 +83,11 @@ const SignInRoute = SignInRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrendingRoute = TrendingRouteImport.update({
@@ -82,6 +115,11 @@ const ApiHealthRoute = ApiHealthRouteImport.update({
   path: '/api/health',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiTelemetryRoute = ApiTelemetryRouteImport.update({
+  id: '/api/telemetry',
+  path: '/api/telemetry',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PreviewProjectRoute = PreviewProjectRouteImport.update({
   id: '/preview/$project',
   path: '/preview/$project',
@@ -90,6 +128,16 @@ const PreviewProjectRoute = PreviewProjectRouteImport.update({
 const ProjectsProjectRoute = ProjectsProjectRouteImport.update({
   id: '/projects/$project',
   path: '/projects/$project',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StacksIndexRoute = StacksIndexRouteImport.update({
+  id: '/stacks/',
+  path: '/stacks/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StacksStackRoute = StacksStackRouteImport.update({
+  id: '/stacks/$stack',
+  path: '/stacks/$stack',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminProjectsProjectRoute = AdminProjectsProjectRouteImport.update({
@@ -116,17 +164,25 @@ const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$category': typeof CategoryRouteWithChildren
+  '/about': typeof AboutRoute
+  '/corrections': typeof CorrectionsRoute
+  '/methodology': typeof MethodologyRoute
+  '/privacy': typeof PrivacyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/search': typeof SearchRoute
   '/sign-in': typeof SignInRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/trending': typeof TrendingRoute
   '/$category/$ecosystem': typeof CategoryEcosystemRoute
   '/admin/metrics': typeof AdminMetricsRoute
   '/api/health': typeof ApiHealthRoute
+  '/api/telemetry': typeof ApiTelemetryRoute
   '/preview/$project': typeof PreviewProjectRoute
   '/projects/$project': typeof ProjectsProjectRoute
+  '/stacks/$stack': typeof StacksStackRoute
   '/admin/': typeof AdminIndexRoute
+  '/stacks/': typeof StacksIndexRoute
   '/admin/projects/$project': typeof AdminProjectsProjectRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/jobs/github': typeof ApiJobsGithubRoute
@@ -135,17 +191,25 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$category': typeof CategoryRouteWithChildren
+  '/about': typeof AboutRoute
+  '/corrections': typeof CorrectionsRoute
+  '/methodology': typeof MethodologyRoute
+  '/privacy': typeof PrivacyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/search': typeof SearchRoute
   '/sign-in': typeof SignInRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/trending': typeof TrendingRoute
   '/$category/$ecosystem': typeof CategoryEcosystemRoute
   '/admin/metrics': typeof AdminMetricsRoute
   '/api/health': typeof ApiHealthRoute
+  '/api/telemetry': typeof ApiTelemetryRoute
   '/preview/$project': typeof PreviewProjectRoute
   '/projects/$project': typeof ProjectsProjectRoute
+  '/stacks/$stack': typeof StacksStackRoute
   '/admin': typeof AdminIndexRoute
+  '/stacks': typeof StacksIndexRoute
   '/admin/projects/$project': typeof AdminProjectsProjectRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/jobs/github': typeof ApiJobsGithubRoute
@@ -155,17 +219,25 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$category': typeof CategoryRouteWithChildren
+  '/about': typeof AboutRoute
+  '/corrections': typeof CorrectionsRoute
+  '/methodology': typeof MethodologyRoute
+  '/privacy': typeof PrivacyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/search': typeof SearchRoute
   '/sign-in': typeof SignInRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/trending': typeof TrendingRoute
   '/$category/$ecosystem': typeof CategoryEcosystemRoute
   '/admin/metrics': typeof AdminMetricsRoute
   '/api/health': typeof ApiHealthRoute
+  '/api/telemetry': typeof ApiTelemetryRoute
   '/preview/$project': typeof PreviewProjectRoute
   '/projects/$project': typeof ProjectsProjectRoute
+  '/stacks/$stack': typeof StacksStackRoute
   '/admin/': typeof AdminIndexRoute
+  '/stacks/': typeof StacksIndexRoute
   '/admin/projects/$project': typeof AdminProjectsProjectRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/jobs/github': typeof ApiJobsGithubRoute
@@ -176,17 +248,25 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/$category'
+    | '/about'
+    | '/corrections'
+    | '/methodology'
+    | '/privacy'
     | '/robots.txt'
     | '/search'
     | '/sign-in'
     | '/sitemap.xml'
+    | '/terms'
     | '/trending'
     | '/$category/$ecosystem'
     | '/admin/metrics'
     | '/api/health'
+    | '/api/telemetry'
     | '/preview/$project'
     | '/projects/$project'
+    | '/stacks/$stack'
     | '/admin/'
+    | '/stacks/'
     | '/admin/projects/$project'
     | '/api/auth/$'
     | '/api/jobs/github'
@@ -195,17 +275,25 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/$category'
+    | '/about'
+    | '/corrections'
+    | '/methodology'
+    | '/privacy'
     | '/robots.txt'
     | '/search'
     | '/sign-in'
     | '/sitemap.xml'
+    | '/terms'
     | '/trending'
     | '/$category/$ecosystem'
     | '/admin/metrics'
     | '/api/health'
+    | '/api/telemetry'
     | '/preview/$project'
     | '/projects/$project'
+    | '/stacks/$stack'
     | '/admin'
+    | '/stacks'
     | '/admin/projects/$project'
     | '/api/auth/$'
     | '/api/jobs/github'
@@ -214,17 +302,25 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/$category'
+    | '/about'
+    | '/corrections'
+    | '/methodology'
+    | '/privacy'
     | '/robots.txt'
     | '/search'
     | '/sign-in'
     | '/sitemap.xml'
+    | '/terms'
     | '/trending'
     | '/$category/$ecosystem'
     | '/admin/metrics'
     | '/api/health'
+    | '/api/telemetry'
     | '/preview/$project'
     | '/projects/$project'
+    | '/stacks/$stack'
     | '/admin/'
+    | '/stacks/'
     | '/admin/projects/$project'
     | '/api/auth/$'
     | '/api/jobs/github'
@@ -234,16 +330,24 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CategoryRoute: typeof CategoryRouteWithChildren
+  AboutRoute: typeof AboutRoute
+  CorrectionsRoute: typeof CorrectionsRoute
+  MethodologyRoute: typeof MethodologyRoute
+  PrivacyRoute: typeof PrivacyRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SearchRoute: typeof SearchRoute
   SignInRoute: typeof SignInRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermsRoute: typeof TermsRoute
   TrendingRoute: typeof TrendingRoute
   AdminMetricsRoute: typeof AdminMetricsRoute
   ApiHealthRoute: typeof ApiHealthRoute
+  ApiTelemetryRoute: typeof ApiTelemetryRoute
   PreviewProjectRoute: typeof PreviewProjectRoute
   ProjectsProjectRoute: typeof ProjectsProjectRoute
+  StacksStackRoute: typeof StacksStackRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  StacksIndexRoute: typeof StacksIndexRoute
   AdminProjectsProjectRoute: typeof AdminProjectsProjectRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiJobsGithubRoute: typeof ApiJobsGithubRoute
@@ -264,6 +368,34 @@ declare module '@tanstack/react-router' {
       path: '/$category'
       fullPath: '/$category'
       preLoaderRoute: typeof CategoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/corrections': {
+      id: '/corrections'
+      path: '/corrections'
+      fullPath: '/corrections'
+      preLoaderRoute: typeof CorrectionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/methodology': {
+      id: '/methodology'
+      path: '/methodology'
+      fullPath: '/methodology'
+      preLoaderRoute: typeof MethodologyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/robots.txt': {
@@ -292,6 +424,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/trending': {
@@ -329,6 +468,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/telemetry': {
+      id: '/api/telemetry'
+      path: '/api/telemetry'
+      fullPath: '/api/telemetry'
+      preLoaderRoute: typeof ApiTelemetryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/preview/$project': {
       id: '/preview/$project'
       path: '/preview/$project'
@@ -341,6 +487,20 @@ declare module '@tanstack/react-router' {
       path: '/projects/$project'
       fullPath: '/projects/$project'
       preLoaderRoute: typeof ProjectsProjectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stacks/': {
+      id: '/stacks/'
+      path: '/stacks'
+      fullPath: '/stacks/'
+      preLoaderRoute: typeof StacksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stacks/$stack': {
+      id: '/stacks/$stack'
+      path: '/stacks/$stack'
+      fullPath: '/stacks/$stack'
+      preLoaderRoute: typeof StacksStackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/projects/$project': {
@@ -389,16 +549,24 @@ const CategoryRouteWithChildren = CategoryRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CategoryRoute: CategoryRouteWithChildren,
+  AboutRoute: AboutRoute,
+  CorrectionsRoute: CorrectionsRoute,
+  MethodologyRoute: MethodologyRoute,
+  PrivacyRoute: PrivacyRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SearchRoute: SearchRoute,
   SignInRoute: SignInRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermsRoute: TermsRoute,
   TrendingRoute: TrendingRoute,
   AdminMetricsRoute: AdminMetricsRoute,
   ApiHealthRoute: ApiHealthRoute,
+  ApiTelemetryRoute: ApiTelemetryRoute,
   PreviewProjectRoute: PreviewProjectRoute,
   ProjectsProjectRoute: ProjectsProjectRoute,
+  StacksStackRoute: StacksStackRoute,
   AdminIndexRoute: AdminIndexRoute,
+  StacksIndexRoute: StacksIndexRoute,
   AdminProjectsProjectRoute: AdminProjectsProjectRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiJobsGithubRoute: ApiJobsGithubRoute,

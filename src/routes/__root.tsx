@@ -3,6 +3,7 @@ import type { ErrorComponentProps } from '@tanstack/react-router'
 import appCss from '../styles.css?url'
 import { Providers } from '../components/providers'
 import { SiteHeader } from '../components/site-chrome'
+import { Telemetry } from '../components/telemetry'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -47,7 +48,15 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           </a>
           <SiteHeader />
           <div id="main-content">{children}</div>
+          <Telemetry />
         </Providers>
+        {import.meta.env.VITE_ANALYTICS_SCRIPT_URL ? (
+          <script
+            defer
+            src={import.meta.env.VITE_ANALYTICS_SCRIPT_URL}
+            data-website-id={import.meta.env.VITE_ANALYTICS_SITE_ID}
+          />
+        ) : null}
         <Scripts />
       </body>
     </html>

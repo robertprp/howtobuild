@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { TrendingRow } from '../components/project-views'
 import { SiteFooter } from '../components/site-chrome'
+import { StackCard } from '../components/stack-views'
 import { getSearchData } from '../features/discovery/discovery.functions'
 
 type SearchState = {
@@ -60,7 +61,7 @@ function SearchPage() {
         </header>
         <form className="search-form" method="get" role="search">
           <label className="search-input">
-            Search projects, categories, and ecosystems
+            Search projects, stacks, categories, and ecosystems
             <input name="q" type="search" defaultValue={data.query} autoFocus />
           </label>
           <label>
@@ -144,6 +145,22 @@ function SearchPage() {
           </section>
         ) : null}
 
+        {data.stacks.length ? (
+          <section className="project-section" aria-labelledby="stack-results">
+            <div className="section-heading">
+              <div>
+                <p className="eyebrow">Stack results</p>
+                <h2 id="stack-results">Complete starting points</h2>
+              </div>
+            </div>
+            <div className="stack-directory compact">
+              {data.stacks.map((stack) => (
+                <StackCard stack={stack} key={stack.id} />
+              ))}
+            </div>
+          </section>
+        ) : null}
+
         <section className="project-section" aria-live="polite">
           <div className="section-heading">
             <div>
@@ -166,7 +183,9 @@ function SearchPage() {
                 />
               ))}
             </div>
-          ) : (
+          ) : data.stacks.length ||
+            data.categories.length ||
+            data.facets.length ? null : (
             <div className="empty-state">
               <h3>No reviewed match yet.</h3>
               <p>

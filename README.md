@@ -1,6 +1,6 @@
 # HowToBuild.dev
 
-Phase 2 implements discovery and GitHub intelligence: indexed search and filters, ecosystem landing pages, catalog-wide aggregate collection, historical snapshots, transparent momentum, trending views, and private metric-health controls.
+Phase 3 adds sourced, opinionated technology stacks and the public-beta trust and observability layer to the existing discovery and GitHub intelligence foundation.
 
 ## Run locally
 
@@ -16,7 +16,12 @@ pnpm dev
 
 Open `http://localhost:3000`. The migrations install 39 representative published projects across all six categories. Search at `/search`, inspect momentum at `/trending`, and use `/admin/metrics` to review freshness or exclude a repository from automatic ranking.
 
-## Included in Phase 2
+## Included through Phase 3
+
+- A stack directory and four launch stack guides with responsibility maps, rationale, cost and open-source profiles, alternatives, tradeoffs, and sources
+- Stack-aware search, homepage recommendations, project-to-stack connections, canonical metadata, and sitemap entries
+- Methodology, About, corrections, privacy, and terms pages
+- Optional web analytics plus first-party browser error and Core Web Vitals collection with an optional production ingest sink
 
 - Full-document SSR search, filters, trending, six categories, and permanent ecosystem routes
 - Weighted Postgres full-text search with a GIN index, aliases, and privacy-preserving zero-result aggregation
@@ -40,6 +45,6 @@ Run the complete code-level gate with:
 pnpm verify
 ```
 
-Provider and deployment checks are documented in [the Phase 2 runbook](docs/phase-2-runbook.md). Earlier setup remains in the Phase 0 and Phase 1 runbooks.
+Provider and deployment checks are documented in [the Phase 3 runbook](docs/phase-3-runbook.md). Earlier setup remains in the Phase 0, Phase 1, and Phase 2 runbooks.
 
 Each implementation phase must add a matching `docs/phase-N-runbook.md` containing setup instructions, verification steps, the phase exit gate, and a place to record deployed validation results.
