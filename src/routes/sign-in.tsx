@@ -1,5 +1,6 @@
 import { useSignInSocial } from '@better-auth-ui/react'
 import { createFileRoute } from '@tanstack/react-router'
+import { Mail, ShieldCheck } from 'lucide-react'
 import { useState } from 'react'
 
 import { authClient } from '../lib/auth-client'
@@ -61,22 +62,30 @@ function SignInPage() {
         </p>
       </section>
       <section className="auth-panel" aria-label="Editor sign in">
+        <div className="auth-assurance">
+          <ShieldCheck aria-hidden="true" size={20} strokeWidth={1.8} />
+          <span>Secure, invite-only access</span>
+        </div>
         <button
-          className="button wide"
+          className="provider-button provider-github"
           onClick={() =>
             social.mutate({ provider: 'github', callbackURL: '/admin' })
           }
           disabled={social.isPending}
         >
+          <img src="/assets/github-mark.svg" alt="" aria-hidden="true" />
           Continue with GitHub
         </button>
         <button
-          className="button secondary wide"
+          className="provider-button provider-google"
           onClick={() =>
             social.mutate({ provider: 'google', callbackURL: '/admin' })
           }
           disabled={social.isPending}
         >
+          <span className="google-mark">
+            <img src="/assets/google-g.svg" alt="" aria-hidden="true" />
+          </span>
           Continue with Google
         </button>
         <span className="auth-divider">or use an invited email</span>
@@ -106,6 +115,7 @@ function SignInPage() {
             </label>
           ) : null}
           <button className="button wide" type="submit" disabled={busy}>
+            {!busy && !sent ? <Mail aria-hidden="true" size={18} /> : null}
             {busy
               ? 'Working…'
               : sent

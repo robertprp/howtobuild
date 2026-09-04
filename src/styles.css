@@ -759,6 +759,86 @@ h2 {
   border: 1px solid var(--ink);
   padding: 2rem;
 }
+.auth-assurance {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 1.25rem;
+  color: var(--green);
+  font: 500 0.72rem/1.4 var(--mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.provider-button {
+  position: relative;
+  width: 100%;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  cursor: pointer;
+  transition:
+    box-shadow 150ms,
+    transform 150ms,
+    background 150ms;
+}
+.provider-button + .provider-button {
+  margin-top: 0.75rem;
+}
+.provider-button > img,
+.provider-button .google-mark {
+  position: absolute;
+  left: 12px;
+  width: 20px;
+  height: 20px;
+}
+.provider-button > img {
+  display: block;
+}
+.provider-github {
+  border: 1px solid #1d211d;
+  background: #24292f;
+  color: #ffffff;
+}
+.provider-github:hover {
+  background: #1d211d;
+  box-shadow: 4px 4px 0 var(--rust);
+}
+.provider-google {
+  border: 1px solid #747775;
+  background: #ffffff;
+  color: #1f1f1f;
+  font-family: 'Google Sans', Arial, sans-serif;
+  font-weight: 500;
+}
+.provider-google:hover {
+  background: #f8f9fa;
+  box-shadow: 4px 4px 0 var(--rust);
+}
+.provider-button:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+.provider-button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+.google-mark {
+  display: grid;
+  place-items: center;
+  border-radius: 2px;
+  background: #ffffff;
+}
+.google-mark img {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
 .auth-panel .button + .button {
   margin-top: 0.7rem;
 }
@@ -792,6 +872,7 @@ textarea {
   resize: vertical;
 }
 .auth-panel form .button {
+  gap: 0.55rem;
   margin-top: 1rem;
 }
 .form-message,
