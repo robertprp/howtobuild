@@ -7,6 +7,10 @@ export type GitHubRepositoryObservation = {
   openIssues: number
   pushedAt: Date | null
   latestReleaseAt: Date | null
+  htmlUrl: string | null
+  defaultBranch: string | null
+  archived: boolean
+  private: boolean
   raw: Record<string, unknown>
 }
 
@@ -131,8 +135,11 @@ export async function collectGitHubRepository(
 
   const observation: GitHubRepositoryObservation = {
     nodeId: String(raw.node_id),
-    owner,
-    name,
+    owner:
+      typeof raw.owner === 'object' && raw.owner && 'login' in raw.owner
+        ? String(raw.owner.login)
+        : owner,
+    name: typeof raw.name === 'string' ? raw.name : name,
     stars: Number(raw.stargazers_count),
     forks: Number(raw.forks_count),
     openIssues: Number(raw.open_issues_count),
@@ -140,6 +147,11 @@ export async function collectGitHubRepository(
     latestReleaseAt: release?.published_at
       ? new Date(String(release.published_at))
       : null,
+    htmlUrl: typeof raw.html_url === 'string' ? raw.html_url : null,
+    defaultBranch:
+      typeof raw.default_branch === 'string' ? raw.default_branch : null,
+    archived: raw.archived === true,
+    private: raw.private === true,
     raw,
   }
 

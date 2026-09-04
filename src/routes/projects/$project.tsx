@@ -123,6 +123,50 @@ export function ProjectContent({
             <h2>{project.pricingLabel}</h2>
             <p>{project.pricingSummary}</p>
           </section>
+          <section className="momentum-panel" aria-labelledby="github-momentum">
+            <div>
+              <p className="eyebrow">GitHub momentum</p>
+              <h2 id="github-momentum">
+                {project.momentum
+                  ? `★ ${project.momentum.stars.toLocaleString('en-US')}`
+                  : 'History is being collected'}
+              </h2>
+            </div>
+            {project.momentum ? (
+              <dl className="momentum-facts">
+                <div>
+                  <dt>Last 7 days</dt>
+                  <dd>
+                    {project.momentum.absolute7d === null
+                      ? 'Early signal'
+                      : `+${project.momentum.absolute7d.toLocaleString('en-US')}`}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Last 30 days</dt>
+                  <dd>
+                    {project.momentum.absolute30d === null
+                      ? 'Window incomplete'
+                      : `+${project.momentum.absolute30d.toLocaleString('en-US')}`}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Evidence</dt>
+                  <dd>
+                    {project.momentum.windowStart
+                      ? `${new Date(project.momentum.windowStart).toLocaleDateString('en-US', { timeZone: 'UTC' })}–${new Date(project.momentum.windowEnd).toLocaleDateString('en-US', { timeZone: 'UTC' })}`
+                      : 'First observation'}{' '}
+                    · {project.momentum.confidence} window
+                  </dd>
+                </div>
+              </dl>
+            ) : (
+              <p>
+                GitHub history is never backfilled or extrapolated. Metrics will
+                appear after aggregate snapshots have been observed.
+              </p>
+            )}
+          </section>
           <section className="sources">
             <div>
               <p className="eyebrow">Official links</p>

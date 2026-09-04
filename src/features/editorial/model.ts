@@ -86,6 +86,50 @@ export type PublicProject = {
     checkedAt: string
     checkedBy: string | null
   }>
+  facets: Array<{ id: string; kind: string; slug: string; name: string }>
+  momentum: PublicMomentum | null
+}
+
+export type MetricHealth = 'healthy' | 'delayed' | 'stale' | 'disabled'
+
+export type PublicMomentum = {
+  stars: number
+  absolute7d: number | null
+  absolute30d: number | null
+  relative7d: number | null
+  relative30d: number | null
+  score: number | null
+  confidence: 'early' | 'weekly' | 'complete'
+  windowStart: string | null
+  windowEnd: string
+  anomaly: boolean
+  algorithmVersion: string
+  health: MetricHealth
+}
+
+export function metricHealth(input: {
+  lastSyncedAt: Date | string | null
+  archived?: boolean
+  private?: boolean
+  manuallyExcluded?: boolean
+  syncStatus?: string
+  now?: Date
+}): MetricHealth {
+  if (
+    input.archived ||
+    input.private ||
+    input.manuallyExcluded ||
+    input.syncStatus === 'disabled'
+  )
+    return 'disabled'
+  if (!input.lastSyncedAt) return 'stale'
+  const ageHours =
+    ((input.now ?? new Date()).getTime() -
+      new Date(input.lastSyncedAt).getTime()) /
+    3_600_000
+  if (ageHours <= 30) return 'healthy'
+  if (ageHours <= 72) return 'delayed'
+  return 'stale'
 }
 
 const publishRequiredKeys = [
