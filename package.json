@@ -1,0 +1,74 @@
+{
+  "name": "howtobuild",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.1.1",
+  "engines": {
+    "node": ">=22 <27"
+  },
+  "imports": {
+    "#/*": "./src/*"
+  },
+  "scripts": {
+    "dev": "vite dev --port 3000",
+    "start": "node .output/server/index.mjs",
+    "generate-routes": "tsr generate",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint",
+    "format": "prettier --write . && eslint --fix",
+    "check": "prettier --check . && eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "verify": "pnpm typecheck && pnpm test && pnpm build",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "github:sync": "tsx scripts/sync-github.ts",
+    "asset:process": "tsx scripts/process-asset.ts"
+  },
+  "dependencies": {
+    "@better-auth-ui/core": "1.7.22",
+    "@better-auth-ui/react": "1.7.22",
+    "@orpc/client": "1.15.0",
+    "@orpc/server": "1.15.0",
+    "@orpc/tanstack-query": "1.15.0",
+    "@tailwindcss/vite": "4.3.3",
+    "@tanstack/react-devtools": "0.10.12",
+    "@tanstack/react-query": "5.102.8",
+    "@tanstack/react-router": "1.170.32",
+    "@tanstack/react-router-devtools": "1.167.1",
+    "@tanstack/react-start": "1.168.49",
+    "better-auth": "1.7.2",
+    "drizzle-orm": "0.45.2",
+    "nitro": "3.0.260610-beta",
+    "pg": "8.23.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "sharp": "0.35.4",
+    "tailwindcss": "4.3.3",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@tanstack/devtools-vite": "0.8.5",
+    "@tanstack/eslint-config": "0.4.0",
+    "@tanstack/router-cli": "1.167.33",
+    "@types/node": "22.20.1",
+    "@types/pg": "8.23.1",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.7",
+    "@vitejs/plugin-react": "6.1.1",
+    "drizzle-kit": "0.31.10",
+    "eslint": "10.9.1",
+    "prettier": "3.9.6",
+    "tsx": "4.23.13",
+    "typescript": "6.0.3",
+    "vite": "8.2.2",
+    "vitest": "4.1.11"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "lightningcss"
+    ]
+  }
+}
