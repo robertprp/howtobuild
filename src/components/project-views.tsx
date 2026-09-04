@@ -1,6 +1,10 @@
 import type { PublicProject } from '../features/editorial/model'
 
-export function ProjectMark({ project }: { project: PublicProject }) {
+export function ProjectMark({
+  project,
+}: {
+  project: Pick<PublicProject, 'name' | 'category'>
+}) {
   return (
     <span
       className="project-mark"

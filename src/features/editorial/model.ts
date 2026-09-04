@@ -88,6 +88,51 @@ export type PublicProject = {
   }>
   facets: Array<{ id: string; kind: string; slug: string; name: string }>
   momentum: PublicMomentum | null
+  stacks: Array<{ slug: string; name: string; responsibility: string }>
+}
+
+export type PublicStackProject = Pick<
+  PublicProject,
+  | 'id'
+  | 'slug'
+  | 'name'
+  | 'shortDescription'
+  | 'openSource'
+  | 'selfHostable'
+  | 'pricingLabel'
+  | 'category'
+>
+
+export type PublicStack = {
+  id: string
+  slug: string
+  name: string
+  summary: string
+  description: string
+  targetUser: string
+  earlyStageFit: string
+  openSourceSummary: string
+  costSummary: string
+  tradeoffs: string[]
+  publishedAt: string | null
+  updatedAt: string
+  items: Array<{
+    id: string
+    responsibility: string
+    rationale: string
+    sortOrder: number
+    project: PublicStackProject
+    alternatives: Array<{
+      rationale: string
+      project: PublicStackProject
+    }>
+  }>
+  sources: Array<{
+    claim: string
+    url: string
+    checkedAt: string
+    checkedBy: string | null
+  }>
 }
 
 export type MetricHealth = 'healthy' | 'delayed' | 'stale' | 'disabled'

@@ -461,6 +461,88 @@ export const searchZeroResults = pgTable('search_zero_results', {
     .notNull(),
 })
 
+export const stacks = pgTable(
+  'stacks',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    slug: text('slug').notNull().unique(),
+    name: text('name').notNull(),
+    summary: text('summary').notNull(),
+    description: text('description').notNull(),
+    targetUser: text('target_user').notNull(),
+    earlyStageFit: text('early_stage_fit').notNull(),
+    openSourceSummary: text('open_source_summary').notNull(),
+    costSummary: text('cost_summary').notNull(),
+    tradeoffs: jsonb('tradeoffs').$type<string[]>().notNull(),
+    status: text('status').default('draft').notNull(),
+    createdBy: text('created_by').references(() => user.id),
+    updatedBy: text('updated_by').references(() => user.id),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+    publishedAt: timestamp('published_at', { withTimezone: true }),
+  },
+  (table) => [index('stack_status_name_idx').on(table.status, table.name)],
+)
+
+export const stackItems = pgTable(
+  'stack_items',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    stackId: uuid('stack_id')
+      .notNull()
+      .references(() => stacks.id, { onDelete: 'cascade' }),
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id, { onDelete: 'restrict' }),
+    responsibility: text('responsibility').notNull(),
+    rationale: text('rationale').notNull(),
+    sortOrder: integer('sort_order').notNull(),
+  },
+  (table) => [
+    uniqueIndex('stack_item_responsibility_idx').on(
+      table.stackId,
+      table.responsibility,
+    ),
+    index('stack_item_project_idx').on(table.projectId),
+  ],
+)
+
+export const stackAlternatives = pgTable(
+  'stack_alternatives',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    stackItemId: uuid('stack_item_id')
+      .notNull()
+      .references(() => stackItems.id, { onDelete: 'cascade' }),
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id, { onDelete: 'restrict' }),
+    rationale: text('rationale').notNull(),
+  },
+  (table) => [
+    uniqueIndex('stack_alternative_item_project_idx').on(
+      table.stackItemId,
+      table.projectId,
+    ),
+  ],
+)
+
+export const stackSources = pgTable('stack_sources', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  stackId: uuid('stack_id')
+    .notNull()
+    .references(() => stacks.id, { onDelete: 'cascade' }),
+  claim: text('claim').notNull(),
+  url: text('url').notNull(),
+  checkedAt: timestamp('checked_at', { withTimezone: true }).notNull(),
+  checkedBy: text('checked_by'),
+})
+
 export const collectorLeases = pgTable('collector_leases', {
   name: text('name').primaryKey(),
   holder: text('holder').notNull(),
@@ -512,6 +594,10 @@ export const schema = {
   repositories,
   searchAliases,
   searchZeroResults,
+  stackAlternatives,
+  stackItems,
+  stackSources,
+  stacks,
   session,
   sessionRelations,
   user,

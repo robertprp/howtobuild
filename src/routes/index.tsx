@@ -6,6 +6,7 @@ import {
   TrendingRow,
 } from '../components/project-views'
 import { SiteFooter } from '../components/site-chrome'
+import { StackCard } from '../components/stack-views'
 import { getHomeData } from '../features/editorial/catalog.functions'
 import type { PublicProject } from '../features/editorial/model'
 
@@ -53,6 +54,9 @@ function Home() {
             <a className="button" href="/trending">
               Explore trending
             </a>
+            <a className="button secondary" href="/stacks">
+              Explore stacks
+            </a>
             <a className="text-link" href="/search">
               Search the field guide →
             </a>
@@ -96,6 +100,26 @@ function Home() {
             <EditorialFeature project={lead} />
           </section>
         ) : null}
+
+        <section
+          className="shell project-section"
+          aria-labelledby="home-stacks"
+        >
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">Recommended stacks</p>
+              <h2 id="home-stacks">Coherent ways to start.</h2>
+            </div>
+            <a className="text-link" href="/stacks">
+              See every stack →
+            </a>
+          </div>
+          <div className="stack-directory compact">
+            {data.stacks.map((stack) => (
+              <StackCard stack={stack} key={stack.id} />
+            ))}
+          </div>
+        </section>
 
         <section className="shell category-index" aria-labelledby="categories">
           <div className="section-heading">

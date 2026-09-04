@@ -5,6 +5,7 @@ import { asc, sql } from 'drizzle-orm'
 import { getDb } from '../../db/client.server'
 import { categories, facets, searchZeroResults } from '../../db/schema'
 import { listPublishedProjects } from '../editorial/store.server'
+import { listPublishedStacks } from '../stacks/store.server'
 
 export type DiscoveryFilters = {
   category?: string
@@ -99,7 +100,10 @@ export async function searchDiscovery(
     limit 100
   `)
   const rankById = new Map(result.rows.map((row) => [row.id, row.rank]))
-  const publishedProjects = await listPublishedProjects()
+  const [publishedProjects, publishedStacks] = await Promise.all([
+    listPublishedProjects(),
+    listPublishedStacks(),
+  ])
   const projects = publishedProjects
     .filter((project) => rankById.has(project.id))
     .sort(
@@ -132,12 +136,34 @@ export async function searchDiscovery(
             )?.category.slug ?? null,
         }))
     : []
+  const stackResult = query
+    ? await db.execute<{ id: string; rank: number }>(sql`
+        select id, greatest(
+          ts_rank_cd(search_document, websearch_to_tsquery('english'::regconfig, ${query}), 32),
+          case when lower(name) = ${query} then 2 else 0 end
+        ) as rank
+        from stacks
+        where status = 'published'
+          and search_document @@ websearch_to_tsquery('english'::regconfig, ${query})
+        order by rank desc, name asc
+        limit 20
+      `)
+    : { rows: [] }
+  const stackRank = new Map(stackResult.rows.map((row) => [row.id, row.rank]))
+  const matchedStacks = publishedStacks
+    .filter((stack) => stackRank.has(stack.id))
+    .sort(
+      (a, b) =>
+        (stackRank.get(b.id) ?? 0) - (stackRank.get(a.id) ?? 0) ||
+        a.name.localeCompare(b.name),
+    )
 
   if (
     query &&
     projects.length === 0 &&
     categoriesMatched.length === 0 &&
-    facetsMatched.length === 0
+    facetsMatched.length === 0 &&
+    matchedStacks.length === 0
   )
     await recordZeroResult(query)
 
@@ -145,6 +171,7 @@ export async function searchDiscovery(
     query,
     filters,
     projects,
+    stacks: matchedStacks,
     categories: categoriesMatched,
     facets: facetsMatched,
     filterOptions: {

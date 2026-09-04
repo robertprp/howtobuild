@@ -167,6 +167,20 @@ export function ProjectContent({
               </p>
             )}
           </section>
+          {project.stacks.length ? (
+            <section className="project-prose included-stacks">
+              <p className="eyebrow">Included in stacks</p>
+              <h2>See it in context.</h2>
+              <div>
+                {project.stacks.map((stack) => (
+                  <a href={`/stacks/${stack.slug}`} key={stack.slug}>
+                    <strong>{stack.name}</strong>
+                    <span>{stack.responsibility}</span>
+                  </a>
+                ))}
+              </div>
+            </section>
+          ) : null}
           <section className="sources">
             <div>
               <p className="eyebrow">Official links</p>

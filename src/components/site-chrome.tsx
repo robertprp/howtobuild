@@ -27,6 +27,7 @@ export function SiteHeader() {
               ))}
             </div>
           </details>
+          <a href="/stacks">Stacks</a>
           <a href="/trending">Trending</a>
           <a href="/search">Search</a>
           <a href="/admin">Editor</a>
@@ -55,6 +56,13 @@ export function SiteFooter({ lastUpdated }: { lastUpdated?: string | null }) {
         ) : (
           <span aria-hidden="true" />
         )}
+        <nav aria-label="Editorial and legal">
+          <a href="/methodology">Methodology</a>
+          <a href="/about">About</a>
+          <a href="/corrections">Corrections</a>
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
+        </nav>
       </div>
     </footer>
   )
