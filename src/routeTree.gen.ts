@@ -10,7 +10,15 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CategoryRouteImport } from './routes/$category'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
+import { Route as PreviewProjectRouteImport } from './routes/preview/$project'
+import { Route as ProjectsProjectRouteImport } from './routes/projects/$project'
+import { Route as AdminProjectsProjectRouteImport } from './routes/admin/projects/$project'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiJobsGithubRouteImport } from './routes/api/jobs/github'
 import { Route as ApiRpcSplatRouteImport } from './routes/api/rpc/$'
@@ -20,9 +28,49 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CategoryRoute = CategoryRouteImport.update({
+  id: '/$category',
+  path: '/$category',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignInRoute = SignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiHealthRoute = ApiHealthRouteImport.update({
   id: '/api/health',
   path: '/api/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PreviewProjectRoute = PreviewProjectRouteImport.update({
+  id: '/preview/$project',
+  path: '/preview/$project',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsProjectRoute = ProjectsProjectRouteImport.update({
+  id: '/projects/$project',
+  path: '/projects/$project',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminProjectsProjectRoute = AdminProjectsProjectRouteImport.update({
+  id: '/admin/projects/$project',
+  path: '/admin/projects/$project',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -43,14 +91,30 @@ const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$category': typeof CategoryRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sign-in': typeof SignInRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/health': typeof ApiHealthRoute
+  '/preview/$project': typeof PreviewProjectRoute
+  '/projects/$project': typeof ProjectsProjectRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/projects/$project': typeof AdminProjectsProjectRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/jobs/github': typeof ApiJobsGithubRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$category': typeof CategoryRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sign-in': typeof SignInRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/health': typeof ApiHealthRoute
+  '/preview/$project': typeof PreviewProjectRoute
+  '/projects/$project': typeof ProjectsProjectRoute
+  '/admin': typeof AdminIndexRoute
+  '/admin/projects/$project': typeof AdminProjectsProjectRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/jobs/github': typeof ApiJobsGithubRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
@@ -58,7 +122,15 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$category': typeof CategoryRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sign-in': typeof SignInRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/health': typeof ApiHealthRoute
+  '/preview/$project': typeof PreviewProjectRoute
+  '/projects/$project': typeof ProjectsProjectRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/projects/$project': typeof AdminProjectsProjectRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/jobs/github': typeof ApiJobsGithubRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
@@ -66,13 +138,46 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/api/health' | '/api/auth/$' | '/api/jobs/github' | '/api/rpc/$'
+    | '/'
+    | '/$category'
+    | '/robots.txt'
+    | '/sign-in'
+    | '/sitemap.xml'
+    | '/api/health'
+    | '/preview/$project'
+    | '/projects/$project'
+    | '/admin/'
+    | '/admin/projects/$project'
+    | '/api/auth/$'
+    | '/api/jobs/github'
+    | '/api/rpc/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/health' | '/api/auth/$' | '/api/jobs/github' | '/api/rpc/$'
+  to:
+    | '/'
+    | '/$category'
+    | '/robots.txt'
+    | '/sign-in'
+    | '/sitemap.xml'
+    | '/api/health'
+    | '/preview/$project'
+    | '/projects/$project'
+    | '/admin'
+    | '/admin/projects/$project'
+    | '/api/auth/$'
+    | '/api/jobs/github'
+    | '/api/rpc/$'
   id:
     | '__root__'
     | '/'
+    | '/$category'
+    | '/robots.txt'
+    | '/sign-in'
+    | '/sitemap.xml'
     | '/api/health'
+    | '/preview/$project'
+    | '/projects/$project'
+    | '/admin/'
+    | '/admin/projects/$project'
     | '/api/auth/$'
     | '/api/jobs/github'
     | '/api/rpc/$'
@@ -80,7 +185,15 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CategoryRoute: typeof CategoryRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SignInRoute: typeof SignInRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiHealthRoute: typeof ApiHealthRoute
+  PreviewProjectRoute: typeof PreviewProjectRoute
+  ProjectsProjectRoute: typeof ProjectsProjectRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminProjectsProjectRoute: typeof AdminProjectsProjectRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiJobsGithubRoute: typeof ApiJobsGithubRoute
   ApiRpcSplatRoute: typeof ApiRpcSplatRoute
@@ -95,11 +208,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$category': {
+      id: '/$category'
+      path: '/$category'
+      fullPath: '/$category'
+      preLoaderRoute: typeof CategoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-in': {
+      id: '/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/health': {
       id: '/api/health'
       path: '/api/health'
       fullPath: '/api/health'
       preLoaderRoute: typeof ApiHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/preview/$project': {
+      id: '/preview/$project'
+      path: '/preview/$project'
+      fullPath: '/preview/$project'
+      preLoaderRoute: typeof PreviewProjectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects/$project': {
+      id: '/projects/$project'
+      path: '/projects/$project'
+      fullPath: '/projects/$project'
+      preLoaderRoute: typeof ProjectsProjectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/projects/$project': {
+      id: '/admin/projects/$project'
+      path: '/admin/projects/$project'
+      fullPath: '/admin/projects/$project'
+      preLoaderRoute: typeof AdminProjectsProjectRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
@@ -128,7 +297,15 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CategoryRoute: CategoryRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
+  SignInRoute: SignInRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiHealthRoute: ApiHealthRoute,
+  PreviewProjectRoute: PreviewProjectRoute,
+  ProjectsProjectRoute: ProjectsProjectRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  AdminProjectsProjectRoute: AdminProjectsProjectRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiJobsGithubRoute: ApiJobsGithubRoute,
   ApiRpcSplatRoute: ApiRpcSplatRoute,

@@ -1,34 +1,40 @@
 # HowToBuild.dev
 
-Phase 0 production-shaped spike for the research-backed implementation plan.
+Phase 1 implements the editorial vertical slice: a database-backed field guide, private editor workflow, sourced project publishing, SSR public pages, and crawler controls.
 
 ## Run locally
 
-Requirements: Node 22–26 and pnpm 9.
+Requirements: Node 22–26, pnpm 9, and Postgres.
 
 ```sh
 pnpm install
-pnpm verify
+cp .env.example .env
+pnpm db:migrate
+pnpm editor:invite you@example.com admin
 pnpm dev
 ```
 
-Open `http://localhost:3000` and use both API test buttons. The public page renders without provider credentials; provider-backed endpoints report their missing configuration rather than exposing secrets.
+Open `http://localhost:3000`. The migration installs 12 representative published projects across all six categories. Sign in with the invited address at `/sign-in`; create a draft at `/admin/projects/new`, preview it privately, and publish it from the editor.
 
-## Included in Phase 0
+## Included in Phase 1
 
-- TanStack Start full-document SSR on Nitro, configured for Vercel
-- oRPC Fetch adapter with a typed query and mutation, exercised through TanStack Query
-- Better Auth with GitHub/Google provider wiring, hashed email OTPs, rate limits, and TanStack cookie handling
-- Better Auth UI's React provider as the UI integration boundary
-- Drizzle/Postgres schema and migrations, including auth tables generated against Better Auth 1.7.2
-- GitHub aggregate collector with authentication, conditional ETags, rate-limit retry, advisory locking, and append-only snapshots
-- Sharp asset derivatives, provenance manifest, and optional Supabase Storage upload
-- Automated tests plus type and production build verification
+- Global navigation and a compact, full-document SSR homepage
+- Six category routes and sourced project detail pages
+- Project, category, facet, source, link, repository, asset, role, redirect, revision, and audit schema
+- Invite-only Better Auth accounts with server-side editor/admin authorization
+- Transactional draft, revision, publish, unpublish, and slug-redirect workflows
+- Private, `noindex` previews that never enter public queries or the sitemap
+- Canonical metadata, Open Graph metadata, XML sitemap, robots rules, redirects, and real 404s
+- Self-hosted Fraunces and IBM Plex fonts, design tokens, responsive layouts, visible focus, and reduced-motion behavior
+- Trending-row, editorial-feature, stack-item, and search-result content variants
+- Provenance-aware AVIF/WebP/JPEG image manifests and responsive derivatives
 
-The dependency graph is exact-pinned in `package.json` and `pnpm-lock.yaml` because TanStack Start remains an RC dependency.
+Run the complete code-level gate with:
 
-## Provider validation
+```sh
+pnpm verify
+```
 
-Phase 0's external checks need project credentials. Copy `.env.example` to `.env`, then follow [the Phase 0 runbook](docs/phase-0-runbook.md) for Supabase, OAuth, Resend, GitHub, Supabase Storage, cron, and deployment validation.
+Provider and deployment checks are documented in [the Phase 1 runbook](docs/phase-1-runbook.md). Phase 0 setup remains in [its original runbook](docs/phase-0-runbook.md).
 
-Do not begin Phase 1 until the deployed exit gate in the runbook is recorded as passing.
+Each implementation phase must add a matching `docs/phase-N-runbook.md` containing setup instructions, verification steps, the phase exit gate, and a place to record deployed validation results.

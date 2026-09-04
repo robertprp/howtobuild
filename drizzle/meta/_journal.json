@@ -15,6 +15,20 @@
       "when": 1788508887961,
       "tag": "0001_mature_blue_shield",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788511672018,
+      "tag": "0002_married_blazing_skull",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1788511707377,
+      "tag": "0003_flowery_red_ghost",
+      "breakpoints": true
     }
   ]
 }
