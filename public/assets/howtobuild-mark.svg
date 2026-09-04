@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title">
+  <title id="title">HowToBuild.dev mark</title>
+  <rect width="96" height="96" rx="8" fill="#1d211d"/>
+  <path d="M24 25h12v17h24V25h12v46H60V53H36v18H24V25Z" fill="#f4f0e6"/>
+  <rect x="66" y="65" width="12" height="12" rx="2" fill="#b9472d"/>
+</svg>
