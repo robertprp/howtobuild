@@ -31,6 +31,8 @@ import { Route as AdminMetricsRouteImport } from './routes/admin/metrics'
 import { Route as AdminSubmissionsRouteImport } from './routes/admin/submissions'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as ApiTelemetryRouteImport } from './routes/api/telemetry'
+import { Route as GuidesIndexRouteImport } from './routes/guides/index'
+import { Route as GuidesGuideRouteImport } from './routes/guides/$guide'
 import { Route as PreviewProjectRouteImport } from './routes/preview/$project'
 import { Route as ProjectsProjectRouteImport } from './routes/projects/$project'
 import { Route as StacksIndexRouteImport } from './routes/stacks/index'
@@ -153,6 +155,16 @@ const ApiTelemetryRoute = ApiTelemetryRouteImport.update({
   path: '/api/telemetry',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GuidesIndexRoute = GuidesIndexRouteImport.update({
+  id: '/guides/',
+  path: '/guides/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuidesGuideRoute = GuidesGuideRouteImport.update({
+  id: '/guides/$guide',
+  path: '/guides/$guide',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PreviewProjectRoute = PreviewProjectRouteImport.update({
   id: '/preview/$project',
   path: '/preview/$project',
@@ -230,12 +242,14 @@ export interface FileRoutesByFullPath {
   '/admin/submissions': typeof AdminSubmissionsRoute
   '/api/health': typeof ApiHealthRoute
   '/api/telemetry': typeof ApiTelemetryRoute
+  '/guides/$guide': typeof GuidesGuideRoute
   '/preview/$project': typeof PreviewProjectRoute
   '/projects/$project': typeof ProjectsProjectRoute
   '/stacks/$stack': typeof StacksStackRoute
   '/submit/guidelines': typeof SubmitGuidelinesRoute
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
+  '/guides/': typeof GuidesIndexRoute
   '/stacks/': typeof StacksIndexRoute
   '/submit/': typeof SubmitIndexRoute
   '/admin/projects/$project': typeof AdminProjectsProjectRoute
@@ -265,12 +279,14 @@ export interface FileRoutesByTo {
   '/admin/submissions': typeof AdminSubmissionsRoute
   '/api/health': typeof ApiHealthRoute
   '/api/telemetry': typeof ApiTelemetryRoute
+  '/guides/$guide': typeof GuidesGuideRoute
   '/preview/$project': typeof PreviewProjectRoute
   '/projects/$project': typeof ProjectsProjectRoute
   '/stacks/$stack': typeof StacksStackRoute
   '/submit/guidelines': typeof SubmitGuidelinesRoute
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
+  '/guides': typeof GuidesIndexRoute
   '/stacks': typeof StacksIndexRoute
   '/submit': typeof SubmitIndexRoute
   '/admin/projects/$project': typeof AdminProjectsProjectRoute
@@ -301,12 +317,14 @@ export interface FileRoutesById {
   '/admin/submissions': typeof AdminSubmissionsRoute
   '/api/health': typeof ApiHealthRoute
   '/api/telemetry': typeof ApiTelemetryRoute
+  '/guides/$guide': typeof GuidesGuideRoute
   '/preview/$project': typeof PreviewProjectRoute
   '/projects/$project': typeof ProjectsProjectRoute
   '/stacks/$stack': typeof StacksStackRoute
   '/submit/guidelines': typeof SubmitGuidelinesRoute
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
+  '/guides/': typeof GuidesIndexRoute
   '/stacks/': typeof StacksIndexRoute
   '/submit/': typeof SubmitIndexRoute
   '/admin/projects/$project': typeof AdminProjectsProjectRoute
@@ -338,12 +356,14 @@ export interface FileRouteTypes {
     | '/admin/submissions'
     | '/api/health'
     | '/api/telemetry'
+    | '/guides/$guide'
     | '/preview/$project'
     | '/projects/$project'
     | '/stacks/$stack'
     | '/submit/guidelines'
     | '/account/'
     | '/admin/'
+    | '/guides/'
     | '/stacks/'
     | '/submit/'
     | '/admin/projects/$project'
@@ -373,12 +393,14 @@ export interface FileRouteTypes {
     | '/admin/submissions'
     | '/api/health'
     | '/api/telemetry'
+    | '/guides/$guide'
     | '/preview/$project'
     | '/projects/$project'
     | '/stacks/$stack'
     | '/submit/guidelines'
     | '/account'
     | '/admin'
+    | '/guides'
     | '/stacks'
     | '/submit'
     | '/admin/projects/$project'
@@ -408,12 +430,14 @@ export interface FileRouteTypes {
     | '/admin/submissions'
     | '/api/health'
     | '/api/telemetry'
+    | '/guides/$guide'
     | '/preview/$project'
     | '/projects/$project'
     | '/stacks/$stack'
     | '/submit/guidelines'
     | '/account/'
     | '/admin/'
+    | '/guides/'
     | '/stacks/'
     | '/submit/'
     | '/admin/projects/$project'
@@ -443,12 +467,14 @@ export interface RootRouteChildren {
   AdminSubmissionsRoute: typeof AdminSubmissionsRoute
   ApiHealthRoute: typeof ApiHealthRoute
   ApiTelemetryRoute: typeof ApiTelemetryRoute
+  GuidesGuideRoute: typeof GuidesGuideRoute
   PreviewProjectRoute: typeof PreviewProjectRoute
   ProjectsProjectRoute: typeof ProjectsProjectRoute
   StacksStackRoute: typeof StacksStackRoute
   SubmitGuidelinesRoute: typeof SubmitGuidelinesRoute
   AccountIndexRoute: typeof AccountIndexRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  GuidesIndexRoute: typeof GuidesIndexRoute
   StacksIndexRoute: typeof StacksIndexRoute
   SubmitIndexRoute: typeof SubmitIndexRoute
   AdminProjectsProjectRoute: typeof AdminProjectsProjectRoute
@@ -614,6 +640,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiTelemetryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/guides/': {
+      id: '/guides/'
+      path: '/guides'
+      fullPath: '/guides/'
+      preLoaderRoute: typeof GuidesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guides/$guide': {
+      id: '/guides/$guide'
+      path: '/guides/$guide'
+      fullPath: '/guides/$guide'
+      preLoaderRoute: typeof GuidesGuideRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/preview/$project': {
       id: '/preview/$project'
       path: '/preview/$project'
@@ -726,12 +766,14 @@ const rootRouteChildren: RootRouteChildren = {
   AdminSubmissionsRoute: AdminSubmissionsRoute,
   ApiHealthRoute: ApiHealthRoute,
   ApiTelemetryRoute: ApiTelemetryRoute,
+  GuidesGuideRoute: GuidesGuideRoute,
   PreviewProjectRoute: PreviewProjectRoute,
   ProjectsProjectRoute: ProjectsProjectRoute,
   StacksStackRoute: StacksStackRoute,
   SubmitGuidelinesRoute: SubmitGuidelinesRoute,
   AccountIndexRoute: AccountIndexRoute,
   AdminIndexRoute: AdminIndexRoute,
+  GuidesIndexRoute: GuidesIndexRoute,
   StacksIndexRoute: StacksIndexRoute,
   SubmitIndexRoute: SubmitIndexRoute,
   AdminProjectsProjectRoute: AdminProjectsProjectRoute,

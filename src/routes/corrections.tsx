@@ -1,11 +1,15 @@
+import { seoHead } from '../lib/seo'
 import { createFileRoute } from '@tanstack/react-router'
 import { ContentPage } from '../components/content-page'
 
 export const Route = createFileRoute('/corrections')({
-  head: () => ({
-    meta: [{ title: 'Corrections — HowToBuild.dev' }],
-    links: [{ rel: 'canonical', href: 'https://howtobuild.dev/corrections' }],
-  }),
+  head: () =>
+    seoHead({
+      title: 'Report a correction to the field guide',
+      description:
+        'Help keep developer tools, pricing, licensing, and stack guides accurate. Send a correction with a primary source.',
+      path: '/corrections',
+    }),
   component: Corrections,
 })
 

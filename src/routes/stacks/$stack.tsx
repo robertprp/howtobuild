@@ -1,3 +1,5 @@
+import { seoHead } from '../../lib/seo'
+import { Breadcrumbs } from '../../components/breadcrumbs'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 
 import { ProjectMark } from '../../components/project-views'
@@ -11,24 +13,19 @@ export const Route = createFileRoute('/stacks/$stack')({
     if (!stack) throw notFound()
     return stack
   },
-  head: ({ loaderData }) => {
-    if (!loaderData) return {}
-    const title = `${loaderData.name} technology stack — HowToBuild.dev`
-    return {
-      meta: [
-        { title },
-        { name: 'description', content: loaderData.summary },
-        { property: 'og:title', content: title },
-        { property: 'og:description', content: loaderData.summary },
-      ],
-      links: [
-        {
-          rel: 'canonical',
-          href: `https://howtobuild.dev/stacks/${loaderData.slug}`,
-        },
-      ],
-    }
-  },
+  head: ({ loaderData }) =>
+    loaderData
+      ? seoHead({
+          title: loaderData.name + ': tools, alternatives, and starter prompt',
+          description: loaderData.summary,
+          path: '/stacks/' + loaderData.slug,
+          breadcrumbs: [
+            { name: 'Home', path: '/' },
+            { name: 'Tech stacks', path: '/stacks' },
+            { name: loaderData.name, path: '/stacks/' + loaderData.slug },
+          ],
+        })
+      : { meta: [{ name: 'robots', content: 'noindex, follow' }] },
   component: StackPage,
 })
 
@@ -42,6 +39,13 @@ function StackPage() {
     <>
       <main>
         <article className="shell stack-page">
+          <Breadcrumbs
+            items={[
+              { name: 'Home', path: '/' },
+              { name: 'Tech stacks', path: '/stacks' },
+              { name: stack.name, path: `/stacks/${stack.slug}` },
+            ]}
+          />
           <header className="stack-hero">
             <p className="eyebrow">Recommended stack · {stack.earlyStageFit}</p>
             <h1>{stack.name}</h1>
@@ -73,6 +77,17 @@ function StackPage() {
             </div>
           </section>
           <StackStarter key={stack.id} stack={stack} />
+          <p className="related-guide">
+            Not sure which pieces to choose? Read{' '}
+            <a href="/guides/how-to-choose-a-tech-stack">
+              how to choose a tech stack
+            </a>{' '}
+            or{' '}
+            <a href="/guides/react-auth-and-styling-options">
+              compare React auth and styling options
+            </a>
+            .
+          </p>
 
           <section className="stack-map" aria-labelledby="responsibility-map">
             <div className="section-heading">

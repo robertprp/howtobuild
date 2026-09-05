@@ -1,11 +1,15 @@
+import { seoHead } from '../lib/seo'
 import { createFileRoute } from '@tanstack/react-router'
 import { ContentPage } from '../components/content-page'
 
 export const Route = createFileRoute('/privacy')({
-  head: () => ({
-    meta: [{ title: 'Privacy — HowToBuild.dev' }],
-    links: [{ rel: 'canonical', href: 'https://howtobuild.dev/privacy' }],
-  }),
+  head: () =>
+    seoHead({
+      title: 'Privacy',
+      description:
+        'How HowToBuild.dev handles browsing, account data, contribution records, and operational analytics.',
+      path: '/privacy',
+    }),
   component: Privacy,
 })
 

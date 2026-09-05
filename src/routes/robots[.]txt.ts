@@ -1,18 +1,17 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { SITE_ORIGIN } from '../lib/seo'
 
 export const Route = createFileRoute('/robots.txt')({
   server: {
     handlers: {
       GET: () => {
-        const origin = (
-          process.env.SITE_URL ?? 'https://howtobuild.dev'
-        ).replace(/\/$/, '')
+        const origin = SITE_ORIGIN
         const body = [
           'User-agent: *',
           'Allow: /',
-          'Disallow: /admin',
-          'Disallow: /preview',
-          'Disallow: /sign-in',
+          // HTML noindex must remain crawlable; robots is not access control.
+          'Disallow: /api/',
+          'Disallow: /_serverFn/',
           `Sitemap: ${origin}/sitemap.xml`,
           '',
         ].join('\n')

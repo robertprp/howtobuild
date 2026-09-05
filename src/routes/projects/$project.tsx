@@ -1,3 +1,5 @@
+import { seoHead } from '../../lib/seo'
+import { Breadcrumbs } from '../../components/breadcrumbs'
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router'
 
 import { ProjectMark } from '../../components/project-views'
@@ -16,25 +18,22 @@ export const Route = createFileRoute('/projects/$project')({
     if (!result.project) throw notFound()
     return result.project
   },
-  head: ({ loaderData }) => {
-    if (!loaderData) return {}
-    const title = `${loaderData.name}: uses, pricing, and tradeoffs — HowToBuild.dev`
-    return {
-      meta: [
-        { title },
-        { name: 'description', content: loaderData.shortDescription },
-        { property: 'og:title', content: title },
-        { property: 'og:description', content: loaderData.shortDescription },
-        { property: 'og:type', content: 'article' },
-      ],
-      links: [
-        {
-          rel: 'canonical',
-          href: `https://howtobuild.dev/projects/${loaderData.slug}`,
-        },
-      ],
-    }
-  },
+  head: ({ loaderData }) =>
+    loaderData
+      ? seoHead({
+          title: loaderData.name + ': uses, pricing, and tradeoffs',
+          description: loaderData.shortDescription,
+          path: '/projects/' + loaderData.slug,
+          breadcrumbs: [
+            { name: 'Home', path: '/' },
+            {
+              name: loaderData.category.name,
+              path: '/' + loaderData.category.slug,
+            },
+            { name: loaderData.name, path: '/projects/' + loaderData.slug },
+          ],
+        })
+      : { meta: [{ name: 'robots', content: 'noindex, follow' }] },
   component: ProjectPage,
 })
 
@@ -52,6 +51,18 @@ export function ProjectContent({
           <div className="preview-banner">Private draft preview</div>
         ) : null}
         <article className="project-page shell">
+          {!preview ? (
+            <Breadcrumbs
+              items={[
+                { name: 'Home', path: '/' },
+                {
+                  name: project.category.name,
+                  path: `/${project.category.slug}`,
+                },
+                { name: project.name, path: `/projects/${project.slug}` },
+              ]}
+            />
+          ) : null}
           <header className="project-hero">
             <ProjectMark project={project} />
             <div>

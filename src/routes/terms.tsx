@@ -1,11 +1,15 @@
+import { seoHead } from '../lib/seo'
 import { createFileRoute } from '@tanstack/react-router'
 import { ContentPage } from '../components/content-page'
 
 export const Route = createFileRoute('/terms')({
-  head: () => ({
-    meta: [{ title: 'Terms — HowToBuild.dev' }],
-    links: [{ rel: 'canonical', href: 'https://howtobuild.dev/terms' }],
-  }),
+  head: () =>
+    seoHead({
+      title: 'Terms of use',
+      description:
+        'Terms for browsing and using the HowToBuild.dev developer tools and technology stack guide.',
+      path: '/terms',
+    }),
   component: Terms,
 })
 

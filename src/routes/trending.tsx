@@ -1,4 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { seoHead } from '../lib/seo'
+import { createFileRoute, stripSearchParams } from '@tanstack/react-router'
 
 import { TrendingRow } from '../components/project-views'
 import { SiteFooter } from '../components/site-chrome'
@@ -9,6 +10,7 @@ import type { TrendingPeriod } from '../features/github/period'
 type TrendingSearch = { period: TrendingPeriod; category?: string }
 
 export const Route = createFileRoute('/trending')({
+  search: { middlewares: [stripSearchParams({ period: 'week' })] },
   validateSearch: (search: Record<string, unknown>): TrendingSearch => ({
     period:
       search.period === 'seven-weeks'
@@ -23,27 +25,20 @@ export const Route = createFileRoute('/trending')({
     getTrendingData({
       data: { period: deps.period, filters: { category: deps.category } },
     }),
-  head: ({ loaderData }) => ({
-    meta: [
-      {
-        title: `Most GitHub stars gained: ${periodLabel[loaderData?.period ?? 'week']} — HowToBuild.dev`,
-      },
-      {
-        name: 'description',
-        content:
-          'Developer projects ranked by transparent GitHub momentum windows.',
-      },
-    ],
-    links: [
-      {
-        rel: 'canonical',
-        href:
-          loaderData && loaderData.period !== 'week'
-            ? `https://howtobuild.dev/trending?period=${loaderData.period}`
-            : 'https://howtobuild.dev/trending',
-      },
-    ],
-  }),
+  head: ({ loaderData }) =>
+    seoHead({
+      title:
+        'Trending GitHub projects: ' +
+        periodLabel[loaderData?.period ?? 'week'],
+      description:
+        'Discover developer tools ranked by observed GitHub star growth over 7, 30, or 49 days. Compare uses and costs before choosing a tool.',
+      path:
+        loaderData && loaderData.period !== 'week'
+          ? '/trending?period=' + loaderData.period
+          : '/trending',
+      type: 'CollectionPage',
+      noindex: Boolean(loaderData?.filters.category),
+    }),
   component: TrendingPage,
 })
 

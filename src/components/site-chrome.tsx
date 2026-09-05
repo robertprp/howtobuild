@@ -14,6 +14,13 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="shell nav-shell">
         <Link className="wordmark" to="/" aria-label="HowToBuild.dev home">
+          <img
+            src="/favicon.svg"
+            alt=""
+            width="30"
+            height="30"
+            aria-hidden="true"
+          />
           HowToBuild<span>.dev</span>
         </Link>
         <nav aria-label="Primary navigation">
@@ -28,10 +35,13 @@ export function SiteHeader() {
             </div>
           </details>
           <a href="/stacks">Stacks</a>
+          <a href="/guides">Build guides</a>
           <a href="/trending">Trending</a>
           <a href="/search">Search</a>
           <a href="/submit">Submit</a>
-          <a href="/account">Account</a>
+          <a className="nav-account" href="/account">
+            Account
+          </a>
         </nav>
       </div>
     </header>
@@ -58,6 +68,8 @@ export function SiteFooter({ lastUpdated }: { lastUpdated?: string | null }) {
           <span aria-hidden="true" />
         )}
         <nav aria-label="Editorial and legal">
+          <a href="/guides">Build guides</a>
+          <a href="/stacks">Tech stacks</a>
           <a href="/methodology">Methodology</a>
           <a href="/about">About</a>
           <a href="/corrections">Corrections</a>
