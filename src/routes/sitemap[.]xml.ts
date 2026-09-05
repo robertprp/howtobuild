@@ -5,6 +5,8 @@ import {
   listPublishedProjects,
 } from '../features/editorial/store.server'
 import { listPublishedStacks } from '../features/stacks/store.server'
+import { buildGuides } from '../features/guides/content'
+import { SITE_ORIGIN } from '../lib/seo'
 
 function escapeXml(value: string) {
   return value
@@ -19,9 +21,7 @@ export const Route = createFileRoute('/sitemap.xml')({
   server: {
     handlers: {
       GET: async () => {
-        const origin = (
-          process.env.SITE_URL ?? 'https://howtobuild.dev'
-        ).replace(/\/$/, '')
+        const origin = SITE_ORIGIN
         const [allCategories, allProjects, allStacks] = await Promise.all([
           listCategories(),
           listPublishedProjects(),
@@ -43,6 +43,17 @@ export const Route = createFileRoute('/sitemap.xml')({
           { path: '/trending?period=month', lastmod: undefined },
           { path: '/trending?period=seven-weeks', lastmod: undefined },
           { path: '/stacks', lastmod: undefined },
+          {
+            path: '/guides',
+            lastmod: buildGuides
+              .map((guide) => guide.updatedAt)
+              .sort()
+              .at(-1),
+          },
+          ...buildGuides.map((guide) => ({
+            path: `/guides/${guide.slug}`,
+            lastmod: guide.updatedAt,
+          })),
           { path: '/methodology', lastmod: undefined },
           { path: '/about', lastmod: undefined },
           { path: '/corrections', lastmod: undefined },
@@ -60,6 +71,14 @@ export const Route = createFileRoute('/sitemap.xml')({
                 ]),
               ),
             ).values(),
+          ).filter(
+            (entry) =>
+              allProjects.filter((project) =>
+                project.facets.some(
+                  (facet) =>
+                    `/${project.category.slug}/${facet.slug}` === entry.path,
+                ),
+              ).length >= 3,
           ),
           ...allProjects.map((project) => ({
             path: `/projects/${project.slug}`,

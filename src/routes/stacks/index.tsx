@@ -1,3 +1,4 @@
+import { seoHead, itemList } from '../../lib/seo'
 import { createFileRoute } from '@tanstack/react-router'
 
 import { StackCard } from '../../components/stack-views'
@@ -6,17 +7,22 @@ import { getStacksData } from '../../features/stacks/stack.functions'
 
 export const Route = createFileRoute('/stacks/')({
   loader: () => getStacksData(),
-  head: () => ({
-    meta: [
-      { title: 'Recommended technology stacks — HowToBuild.dev' },
-      {
-        name: 'description',
-        content:
-          'Sourced, opinionated technology stacks with responsibilities, costs, alternatives, and explicit tradeoffs.',
-      },
-    ],
-    links: [{ rel: 'canonical', href: 'https://howtobuild.dev/stacks' }],
-  }),
+  head: ({ loaderData }) =>
+    seoHead({
+      title: 'Tech stacks for SaaS, AI apps, and web development',
+      description:
+        'Compare technology stacks by framework, authentication, database, cost, and ownership. Customize a stack and copy its build prompt.',
+      path: '/stacks',
+      type: 'CollectionPage',
+      schemas: [
+        itemList(
+          (loaderData ?? []).map((stack) => ({
+            name: stack.name,
+            path: '/stacks/' + stack.slug,
+          })),
+        ),
+      ],
+    }),
   component: StackDirectory,
 })
 
@@ -27,7 +33,7 @@ function StackDirectory() {
       <main className="shell stacks-page">
         <header className="stacks-hero">
           <p className="eyebrow">Opinionated combinations</p>
-          <h1>Start with a coherent stack.</h1>
+          <h1>Find the right tech stack for your app.</h1>
           <p className="lede">
             Complete starting points organized by responsibility—with the cost,
             ownership boundary, alternatives, and uncomfortable tradeoffs left
@@ -38,6 +44,18 @@ function StackDirectory() {
           {stacks.map((stack) => (
             <StackCard stack={stack} key={stack.id} />
           ))}
+        </section>
+        <section className="stack-guidance">
+          <h2>What stack should you use?</h2>
+          <p>
+            Start with the product you are building, your team's experience, and
+            the infrastructure you can maintain. Compare each stack's data,
+            auth, and deployment responsibilities, then customize its starter
+            prompt.
+          </p>
+          <a className="text-link" href="/guides/how-to-choose-a-tech-stack">
+            Read the tech stack decision guide →
+          </a>
         </section>
       </main>
       <SiteFooter />

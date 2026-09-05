@@ -1,3 +1,4 @@
+import { seoHead } from '../lib/seo'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 
 import { EditorialFeature, TrendingRow } from '../components/project-views'
@@ -12,21 +13,22 @@ export const Route = createFileRoute('/$category')({
   },
   head: ({ loaderData }) =>
     loaderData
-      ? {
-          meta: [
+      ? seoHead({
+          title:
+            loaderData.category.name +
+            ' tools and frameworks for your tech stack',
+          description: loaderData.category.description,
+          path: '/' + loaderData.category.slug,
+          type: 'CollectionPage',
+          breadcrumbs: [
+            { name: 'Home', path: '/' },
             {
-              title: `${loaderData.category.name} developer tools — HowToBuild.dev`,
-            },
-            { name: 'description', content: loaderData.category.description },
-          ],
-          links: [
-            {
-              rel: 'canonical',
-              href: `https://howtobuild.dev/${loaderData.category.slug}`,
+              name: loaderData.category.name,
+              path: '/' + loaderData.category.slug,
             },
           ],
-        }
-      : {},
+        })
+      : { meta: [{ name: 'robots', content: 'noindex, follow' }] },
   component: CategoryPage,
 })
 

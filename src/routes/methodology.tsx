@@ -1,18 +1,15 @@
+import { seoHead } from '../lib/seo'
 import { createFileRoute } from '@tanstack/react-router'
 import { ContentPage } from '../components/content-page'
 
 export const Route = createFileRoute('/methodology')({
-  head: () => ({
-    meta: [
-      { title: 'Methodology — HowToBuild.dev' },
-      {
-        name: 'description',
-        content:
-          'How HowToBuild.dev selects, measures, and reviews developer tools and technology stacks.',
-      },
-    ],
-    links: [{ rel: 'canonical', href: 'https://howtobuild.dev/methodology' }],
-  }),
+  head: () =>
+    seoHead({
+      title: 'How we review tools and measure GitHub growth',
+      description:
+        'Understand our tech stack recommendations, source checks, pricing labels, and observed GitHub star-growth windows.',
+      path: '/methodology',
+    }),
   component: Methodology,
 })
 

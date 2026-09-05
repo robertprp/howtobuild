@@ -34,6 +34,7 @@ export const getHomeData = createServerFn({ method: 'GET' }).handler(
     ])
     return {
       categories: allCategories,
+      projects: allProjects,
       trending: allProjects
         .filter(
           (project) =>

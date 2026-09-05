@@ -1,3 +1,4 @@
+import { seoHead } from '../lib/seo'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 
 import { TrendingRow } from '../components/project-views'
@@ -14,26 +15,35 @@ export const Route = createFileRoute('/$category/$ecosystem')({
   },
   head: ({ loaderData }) =>
     loaderData
-      ? {
-          meta: [
+      ? seoHead({
+          title:
+            loaderData.facet.name +
+            ' ' +
+            loaderData.category.name +
+            ' tools and frameworks',
+          description:
+            'Compare ' +
+            loaderData.facet.name +
+            ' tools for ' +
+            loaderData.category.name.toLowerCase() +
+            ': uses, pricing, open-source options, and documented tradeoffs.',
+          path: '/' + loaderData.category.slug + '/' + loaderData.facet.slug,
+          type: 'CollectionPage',
+          noindex: loaderData.projects.length < 3,
+          breadcrumbs: [
+            { name: 'Home', path: '/' },
             {
-              title: `${loaderData.facet.name} ${loaderData.category.name} tools — HowToBuild.dev`,
+              name: loaderData.category.name,
+              path: '/' + loaderData.category.slug,
             },
             {
-              name: 'description',
-              content:
-                loaderData.facet.description ??
-                `A reviewed guide to ${loaderData.facet.name} projects.`,
+              name: loaderData.facet.name,
+              path:
+                '/' + loaderData.category.slug + '/' + loaderData.facet.slug,
             },
           ],
-          links: [
-            {
-              rel: 'canonical',
-              href: `https://howtobuild.dev/${loaderData.category.slug}/${loaderData.facet.slug}`,
-            },
-          ],
-        }
-      : {},
+        })
+      : { meta: [{ name: 'robots', content: 'noindex, follow' }] },
   component: EcosystemPage,
 })
 

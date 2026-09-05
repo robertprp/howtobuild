@@ -4,6 +4,7 @@ import appCss from '../styles.css?url'
 import { Providers } from '../components/providers'
 import { SiteHeader } from '../components/site-chrome'
 import { Telemetry } from '../components/telemetry'
+import { SITE_DESCRIPTION, SITE_INDEXABLE } from '../lib/seo'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -20,10 +21,40 @@ export const Route = createRootRoute({
       },
       {
         name: 'description',
-        content: 'A sourced editorial field guide to modern developer tools.',
+        content: SITE_DESCRIPTION,
       },
+      { name: 'theme-color', content: '#1d211d' },
+      ...(!SITE_INDEXABLE
+        ? [{ name: 'robots', content: 'noindex, follow' }]
+        : []),
+      ...(import.meta.env.VITE_GOOGLE_SITE_VERIFICATION
+        ? [
+            {
+              name: 'google-site-verification',
+              content: import.meta.env.VITE_GOOGLE_SITE_VERIFICATION,
+            },
+          ]
+        : []),
     ],
     links: [
+      {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '96x96',
+        href: '/favicon-96.png',
+      },
+      {
+        rel: 'icon',
+        type: 'image/svg+xml',
+        sizes: 'any',
+        href: '/favicon.svg',
+      },
+      {
+        rel: 'apple-touch-icon',
+        sizes: '180x180',
+        href: '/apple-touch-icon.png',
+      },
+      { rel: 'manifest', href: '/site.webmanifest' },
       {
         rel: 'stylesheet',
         href: appCss,

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#ffdabd"/>
+  <path d="M64 130H1136M64 541H1136" stroke="#c9c1b2" stroke-width="2"/>
+  <rect x="64" y="52" width="48" height="48" rx="7" fill="#1d211d"/>
+  <path d="M76 64h7v9h10v-9h7v25h-7v-9H83v9h-7Z" fill="#f4f0e6"/>
+  <rect x="97" y="86" width="7" height="7" fill="#fb8c24"/>
+  <text x="132" y="88" fill="#1d211d" font-family="sans-serif" font-size="34" font-weight="700">HowToBuild.dev</text>
+  <text x="64" y="246" fill="#1d211d" font-family="sans-serif" font-size="78" font-weight="700">Choose your stack.</text>
+  <text x="64" y="342" fill="#1d211d" font-family="sans-serif" font-size="78" font-weight="700">Start your build.</text>
+  <text x="68" y="420" fill="#65685f" font-family="sans-serif" font-size="29">Frameworks, auth, databases, costs, and tradeoffs.</text>
+  <rect x="68" y="456" width="330" height="51" rx="12" fill="#fb8c24" stroke="#1d211d"/>
+  <text x="89" y="490" fill="#1d211d" font-family="sans-serif" font-size="25">Find your starting point →</text>
+  <text x="68" y="586" fill="#65685f" font-family="monospace" font-size="21">INDEPENDENT DEVELOPER FIELD GUIDE</text>
+</svg>

@@ -1,4 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { seoHead } from '../lib/seo'
+import { createFileRoute, stripSearchParams } from '@tanstack/react-router'
 
 import { TrendingRow } from '../components/project-views'
 import { SiteFooter } from '../components/site-chrome'
@@ -16,6 +17,7 @@ type SearchState = {
 }
 
 export const Route = createFileRoute('/search')({
+  search: { middlewares: [stripSearchParams({ q: '' })] },
   validateSearch: (search: Record<string, unknown>): SearchState => ({
     q: typeof search.q === 'string' ? search.q.slice(0, 120) : '',
     category: typeof search.category === 'string' ? search.category : undefined,
@@ -40,13 +42,14 @@ export const Route = createFileRoute('/search')({
         },
       },
     }),
-  head: () => ({
-    meta: [
-      { title: 'Search developer tools — HowToBuild.dev' },
-      { name: 'robots', content: 'noindex, follow' },
-    ],
-    links: [{ rel: 'canonical', href: 'https://howtobuild.dev/search' }],
-  }),
+  head: () =>
+    seoHead({
+      title: 'Search developer tools and tech stacks',
+      description:
+        'Filter the reviewed catalog by language, category, pricing, open source, and self-hosting to find tools for your next build.',
+      path: '/search',
+      noindex: true,
+    }),
   component: SearchPage,
 })
 
