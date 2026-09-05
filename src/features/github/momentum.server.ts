@@ -80,6 +80,12 @@ export async function calculateAndStoreMomentum() {
         currentSnapshotId: value.currentSnapshotId,
         weeklySnapshotId: value.weeklySnapshotId,
         monthlySnapshotId: value.monthlySnapshotId,
+        sevenWeekSnapshotId: value.sevenWeekSnapshotId,
+        absolute49d: value.absolute49d,
+        relative49d: value.relative49d,
+        weeklyWindowStart: value.weeklyWindowStart,
+        monthlyWindowStart: value.monthlyWindowStart,
+        sevenWeekWindowStart: value.sevenWeekWindowStart,
         stars: value.stars,
         absolute7d: value.absolute7d,
         absolute30d: value.absolute30d,
@@ -97,6 +103,7 @@ export async function calculateAndStoreMomentum() {
       .onConflictDoUpdate({
         target: [projectMomentum.projectId, projectMomentum.calculatedAt],
         set: {
+          ...value,
           score: scores.get(value.currentSnapshotId) ?? null,
           confidence: value.confidence,
           anomaly: value.anomaly,

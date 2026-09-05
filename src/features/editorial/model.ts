@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import type { StarterOption } from '../stacks/starter'
 
 export const projectStatusSchema = z.enum(['draft', 'published', 'archived'])
 
@@ -104,6 +105,7 @@ export type PublicStackProject = Pick<
 >
 
 export type PublicStack = {
+  starterOptions: StarterOption[]
   id: string
   slug: string
   name: string
@@ -141,6 +143,11 @@ export type PublicMomentum = {
   stars: number
   absolute7d: number | null
   absolute30d: number | null
+  absolute49d: number | null
+  relative49d: number | null
+  weeklyWindowStart: string | null
+  monthlyWindowStart: string | null
+  sevenWeekWindowStart: string | null
   relative7d: number | null
   relative30d: number | null
   score: number | null

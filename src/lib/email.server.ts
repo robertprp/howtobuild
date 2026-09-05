@@ -19,7 +19,7 @@ const TITLE_MAP: Record<OtpType, string> = {
 
 const INTRO_MAP: Record<OtpType, string> = {
   'sign-in':
-    'Use this one-time code to continue to the private editorial workspace.',
+    'Use this one-time code to sign in to your HowToBuild.dev account.',
   'change-email':
     'Use this one-time code to confirm the email address change on your account.',
   'email-verification': 'Use this one-time code to verify your email address.',

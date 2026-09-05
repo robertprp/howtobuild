@@ -1,4 +1,4 @@
-export const MOMENTUM_ALGORITHM_VERSION = 'v1.0.0'
+export const MOMENTUM_ALGORITHM_VERSION = 'v1.1.0'
 
 const DAY = 86_400_000
 
@@ -14,6 +14,12 @@ export type MomentumEvidence = {
   currentSnapshotId: string
   weeklySnapshotId: string | null
   monthlySnapshotId: string | null
+  sevenWeekSnapshotId: string | null
+  absolute49d: number | null
+  relative49d: number | null
+  weeklyWindowStart: Date | null
+  monthlyWindowStart: Date | null
+  sevenWeekWindowStart: Date | null
   stars: number
   absolute7d: number | null
   absolute30d: number | null
@@ -42,7 +48,9 @@ function baseline(
     .filter(
       (snapshot) =>
         current.observedAt.getTime() - snapshot.observedAt.getTime() >=
-        minimumSpan * DAY,
+          minimumSpan * DAY &&
+        current.observedAt.getTime() - snapshot.observedAt.getTime() <=
+          (days + 3) * DAY,
     )
     .sort(
       (a, b) =>
@@ -64,6 +72,7 @@ export function calculateMomentumEvidence(
 
   const weekly = baseline(ordered, current, 7, 5)
   const monthly = baseline(ordered, current, 30, 21)
+  const sevenWeek = baseline(ordered, current, 49, 46)
   const absolute7d = weekly ? Math.max(current.stars - weekly.stars, 0) : null
   const absolute30d = monthly
     ? Math.max(current.stars - monthly.stars, 0)
@@ -96,11 +105,29 @@ export function calculateMomentumEvidence(
       anomalyReasons.push('unusual_weekly_growth')
     if (observedWeeklyDelta < 0) anomalyReasons.push('star_count_decreased')
   }
+  if (
+    [monthly, sevenWeek].some(
+      (snapshot) => snapshot && current.stars < snapshot.stars,
+    ) &&
+    !anomalyReasons.includes('star_count_decreased')
+  )
+    anomalyReasons.push('star_count_decreased')
 
   return {
     currentSnapshotId: current.id,
     weeklySnapshotId: weekly?.id ?? null,
     monthlySnapshotId: monthly?.id ?? null,
+    sevenWeekSnapshotId: sevenWeek?.id ?? null,
+    absolute49d: sevenWeek
+      ? Math.max(current.stars - sevenWeek.stars, 0)
+      : null,
+    relative49d: sevenWeek
+      ? Math.max(current.stars - sevenWeek.stars, 0) /
+        Math.max(sevenWeek.stars, 100)
+      : null,
+    weeklyWindowStart: weekly?.observedAt ?? null,
+    monthlyWindowStart: monthly?.observedAt ?? null,
+    sevenWeekWindowStart: sevenWeek?.observedAt ?? null,
     stars: current.stars,
     absolute7d,
     absolute30d,

@@ -208,6 +208,16 @@ export function ProjectContent({
               ))}
             </div>
           </section>
+          {!preview ? (
+            <div className="project-community-actions">
+              <a href={`/projects/${project.slug}/suggest`}>Suggest an edit</a>
+              <a
+                href={`/report?projectId=${project.id}&page=${encodeURIComponent(`/projects/${project.slug}`)}`}
+              >
+                Report abuse
+              </a>
+            </div>
+          ) : null}
         </article>
       </main>
       <SiteFooter />

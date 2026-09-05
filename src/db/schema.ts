@@ -12,6 +12,7 @@ import {
   real,
 } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
+import type { StarterOption } from '../features/stacks/starter'
 
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
@@ -407,6 +408,19 @@ export const projectMomentum = pgTable(
       () => githubSnapshots.id,
       { onDelete: 'set null' },
     ),
+    sevenWeekSnapshotId: uuid('seven_week_snapshot_id').references(
+      () => githubSnapshots.id,
+      { onDelete: 'set null' },
+    ),
+    absolute49d: integer('absolute_49d'),
+    relative49d: real('relative_49d'),
+    weeklyWindowStart: timestamp('weekly_window_start', { withTimezone: true }),
+    monthlyWindowStart: timestamp('monthly_window_start', {
+      withTimezone: true,
+    }),
+    sevenWeekWindowStart: timestamp('seven_week_window_start', {
+      withTimezone: true,
+    }),
     stars: integer('stars').notNull(),
     absolute7d: integer('absolute_7d'),
     absolute30d: integer('absolute_30d'),
@@ -474,6 +488,10 @@ export const stacks = pgTable(
     openSourceSummary: text('open_source_summary').notNull(),
     costSummary: text('cost_summary').notNull(),
     tradeoffs: jsonb('tradeoffs').$type<string[]>().notNull(),
+    starterOptions: jsonb('starter_options')
+      .$type<StarterOption[]>()
+      .default([])
+      .notNull(),
     status: text('status').default('draft').notNull(),
     createdBy: text('created_by').references(() => user.id),
     updatedBy: text('updated_by').references(() => user.id),
@@ -543,6 +561,134 @@ export const stackSources = pgTable('stack_sources', {
   checkedBy: text('checked_by'),
 })
 
+export const submissions = pgTable(
+  'submissions',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    repositoryUrl: text('repository_url').notNull(),
+    projectId: uuid('project_id').references(() => projects.id),
+    repositoryOwner: text('repository_owner').notNull(),
+    repositoryName: text('repository_name').notNull(),
+    fingerprint: text('fingerprint').notNull(),
+    payload: jsonb('payload')
+      .$type<Record<string, string | number | boolean | string[]>>()
+      .notNull(),
+    status: text('status').default('submitted').notNull(),
+    moderationReason: text('moderation_reason'),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index('submission_user_created_idx').on(table.userId, table.createdAt),
+    index('submission_repository_status_idx').on(
+      table.repositoryOwner,
+      table.repositoryName,
+      table.status,
+    ),
+  ],
+)
+
+export const editSuggestions = pgTable(
+  'edit_suggestions',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id, { onDelete: 'cascade' }),
+    payload: jsonb('payload')
+      .$type<Record<string, string | number | boolean | string[]>>()
+      .notNull(),
+    fingerprint: text('fingerprint').notNull(),
+    status: text('status').default('submitted').notNull(),
+    moderationReason: text('moderation_reason'),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index('edit_suggestion_user_created_idx').on(table.userId, table.createdAt),
+    index('edit_suggestion_project_status_idx').on(
+      table.projectId,
+      table.status,
+    ),
+  ],
+)
+
+export const moderationEvents = pgTable('moderation_events', {
+  id: bigint('id', { mode: 'number' }).generatedAlwaysAsIdentity().primaryKey(),
+  actorId: text('actor_id')
+    .notNull()
+    .references(() => user.id),
+  submissionId: uuid('submission_id').references(() => submissions.id, {
+    onDelete: 'cascade',
+  }),
+  editSuggestionId: uuid('edit_suggestion_id').references(
+    () => editSuggestions.id,
+    { onDelete: 'cascade' },
+  ),
+  action: text('action').notNull(),
+  reason: text('reason').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+})
+
+export const contributionRateLimits = pgTable(
+  'contribution_rate_limits',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    identityHash: text('identity_hash').notNull(),
+    action: text('action').notNull(),
+    windowStartedAt: timestamp('window_started_at', {
+      withTimezone: true,
+    }).notNull(),
+    count: integer('count').default(1).notNull(),
+  },
+  (table) => [
+    uniqueIndex('contribution_rate_limit_window_idx').on(
+      table.identityHash,
+      table.action,
+      table.windowStartedAt,
+    ),
+  ],
+)
+
+export const abuseReports = pgTable(
+  'abuse_reports',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    reporterId: text('reporter_id').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    projectId: uuid('project_id').references(() => projects.id, {
+      onDelete: 'set null',
+    }),
+    pageUrl: text('page_url').notNull(),
+    reason: text('reason').notNull(),
+    details: text('details').notNull(),
+    status: text('status').default('open').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index('abuse_report_status_created_idx').on(table.status, table.createdAt),
+  ],
+)
+
 export const collectorLeases = pgTable('collector_leases', {
   name: text('name').primaryKey(),
   holder: text('holder').notNull(),
@@ -573,15 +719,19 @@ export const accountRelations = relations(account, ({ one }) => ({
 export const schema = {
   account,
   accountRelations,
+  abuseReports,
   assets,
   auditEvents,
   categories,
   collectorLeases,
+  contributionRateLimits,
   editorialRevisions,
   editorInvites,
   editorRoles,
+  editSuggestions,
   facets,
   githubSnapshots,
+  moderationEvents,
   projectMomentum,
   phaseZeroChecks,
   projectAssets,
@@ -598,6 +748,7 @@ export const schema = {
   stackItems,
   stackSources,
   stacks,
+  submissions,
   session,
   sessionRelations,
   user,

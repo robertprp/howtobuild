@@ -4,9 +4,13 @@ import {
   listCollectableRepositories,
   postgresSnapshotStore,
   recordCollectionFailure,
+  collectUnlinkedCatalogRepositories,
 } from './store.server'
 
 export async function collectCatalogRepositories(token: string) {
+  const discovery = await collectUnlinkedCatalogRepositories((coordinate) =>
+    collectGitHubRepository(coordinate, token, postgresSnapshotStore),
+  )
   const repositories = await listCollectableRepositories()
   const results: Array<{
     coordinate: string
@@ -36,6 +40,7 @@ export async function collectCatalogRepositories(token: string) {
     succeeded: results.filter((result) => result.status !== 'failed').length,
     failed: results.filter((result) => result.status === 'failed').length,
     momentum,
+    discovery,
     results,
   }
 }

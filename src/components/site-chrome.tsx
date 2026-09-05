@@ -30,7 +30,8 @@ export function SiteHeader() {
           <a href="/stacks">Stacks</a>
           <a href="/trending">Trending</a>
           <a href="/search">Search</a>
-          <a href="/admin">Editor</a>
+          <a href="/submit">Submit</a>
+          <a href="/account">Account</a>
         </nav>
       </div>
     </header>
@@ -62,6 +63,7 @@ export function SiteFooter({ lastUpdated }: { lastUpdated?: string | null }) {
           <a href="/corrections">Corrections</a>
           <a href="/privacy">Privacy</a>
           <a href="/terms">Terms</a>
+          <a href="/report">Report abuse</a>
         </nav>
       </div>
     </footer>

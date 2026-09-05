@@ -27,10 +27,15 @@ function Methodology() {
         <h2>Trending is measured momentum</h2>
         <p>
           We store aggregate GitHub observations and compare eligible snapshots
-          over approximately 7 and 30 days. Total stars, absolute growth,
-          relative growth, and recent repository activity contribute to a
-          versioned score normalized within category. New projects are labeled
-          as early signals; incomplete windows are never extrapolated.
+          over approximately 7, 30, and 49 days. The trending page ranks catalog
+          projects by net stars gained in the selected period, not lifetime
+          totals. We show the actual observation dates: the seven-week baseline
+          must be within three days of 49 days. This is not an index of all
+          GitHub repositories or a count of every individual starring event. New
+          projects are labeled as early signals; incomplete windows are never
+          extrapolated. Other discovery surfaces may use our separate,
+          category-normalized momentum score, which also considers relative
+          growth and recent repository activity.
         </p>
       </section>
       <section>

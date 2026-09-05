@@ -1,10 +1,10 @@
 # HowToBuild.dev
 
-Phase 3 adds sourced, opinionated technology stacks and the public-beta trust and observability layer to the existing discovery and GitHub intelligence foundation.
+Phase 4 adds authenticated community project submissions, edit suggestions, moderation, contribution status, and abuse controls to the public-beta field guide.
 
 ## Run locally
 
-Requirements: Node 22–26, pnpm 9, and Postgres.
+Requirements: Node 22–26, pnpm 9, and an already configured Postgres database. Fill in `.env` before running migrations; do not overwrite an existing `.env`.
 
 ```sh
 pnpm install
@@ -16,9 +16,17 @@ pnpm dev
 
 Open `http://localhost:3000`. The migrations install 39 representative published projects across all six categories. Search at `/search`, inspect momentum at `/trending`, and use `/admin/metrics` to review freshness or exclude a repository from automatic ranking.
 
-## Included through Phase 3
+Migrations do **not** run automatically on `pnpm dev`, `pnpm build`, or `pnpm start`. Run `pnpm db:migrate` explicitly against the intended database before serving updated code. The current changes add migrations `0006` and `0007`; they have not been applied during verification.
+
+## Included through Phase 4
+
+- Public GitHub, Google, and email OTP accounts with account/session controls
+- GitHub-assisted project submission, guidelines, contributor status history, and factual edit suggestions
+- An editor-only moderation queue with reasoned state changes and a separate append-only event trail
+- Canonical GitHub validation, duplicate detection, honeypots, minimum-fill timing, per-account and privacy-preserving per-IP rate limits, and abuse reporting
 
 - A stack directory and four launch stack guides with responsibility maps, rationale, cost and open-source profiles, alternatives, tradeoffs, and sources
+- Stack starter selectors with a dark copyable prompt and `.md` download; researched Better Auth/Clerk and shadcn/ui/Mantine choices for the Next.js SaaS stacks
 - Stack-aware search, homepage recommendations, project-to-stack connections, canonical metadata, and sitemap entries
 - Methodology, About, corrections, privacy, and terms pages
 - Optional web analytics plus first-party browser error and Core Web Vitals collection with an optional production ingest sink
@@ -26,12 +34,12 @@ Open `http://localhost:3000`. The migrations install 39 representative published
 - Full-document SSR search, filters, trending, six categories, and permanent ecosystem routes
 - Weighted Postgres full-text search with a GIN index, aliases, and privacy-preserving zero-result aggregation
 - Serial GitHub collection with ETags, retries, redirects, normalized observations, and repository health
-- Versioned 7/30-day momentum evidence with confidence, activity, category normalization, and anomaly flags
+- Versioned 7/30/49-day star-growth evidence, actual observation dates, and a trending view sorted by net star gains in the selected window (catalog projects, not all GitHub)
 - Public evidence labels plus stale, anomalous, and manually excluded ranking guards
 - Private metric-health controls with reasoned audit events
 - A 39-project sourced private-alpha catalog
 - Project, category, facet, source, link, repository, asset, role, redirect, revision, and audit schema
-- Invite-only Better Auth accounts with server-side editor/admin authorization
+- Public Better Auth accounts with invite-only, server-side editor/admin authorization
 - Transactional draft, revision, publish, unpublish, and slug-redirect workflows
 - Private, `noindex` previews that never enter public queries or the sitemap
 - Canonical metadata, Open Graph metadata, XML sitemap, robots rules, redirects, and real 404s
@@ -45,6 +53,6 @@ Run the complete code-level gate with:
 pnpm verify
 ```
 
-Provider and deployment checks are documented in [the Phase 3 runbook](docs/phase-3-runbook.md). Earlier setup remains in the Phase 0, Phase 1, and Phase 2 runbooks.
+Provider and deployment checks are documented in [the Phase 4 runbook](docs/phase-4-runbook.md). Earlier phase runbooks remain available in `docs/`.
 
 Each implementation phase must add a matching `docs/phase-N-runbook.md` containing setup instructions, verification steps, the phase exit gate, and a place to record deployed validation results.

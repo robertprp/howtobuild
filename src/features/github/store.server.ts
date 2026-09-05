@@ -2,7 +2,13 @@ import { and, desc, eq, ne, sql } from 'drizzle-orm'
 import type { PoolClient } from 'pg'
 
 import { getDb, getPool } from '../../db/client.server'
-import { githubSnapshots, repositories } from '../../db/schema'
+import {
+  githubSnapshots,
+  repositories,
+  projectLinks,
+  projectRepositories,
+  projects,
+} from '../../db/schema'
 import type { SnapshotStore } from './collector'
 
 export const postgresSnapshotStore: SnapshotStore = {
@@ -138,6 +144,85 @@ export async function listCollectableRepositories() {
         ne(repositories.syncStatus, 'disabled'),
       ),
     )
+}
+
+// Pick up newly published projects without inventing a GitHub node ID or
+// requiring an editor to register the same repository in two places.
+export async function collectUnlinkedCatalogRepositories(
+  collect: (coordinate: string) => Promise<unknown>,
+) {
+  const db = getDb()
+  const links = await db
+    .select({ projectId: projects.id, url: projectLinks.url })
+    .from(projects)
+    .innerJoin(projectLinks, eq(projectLinks.projectId, projects.id))
+    .where(
+      and(
+        eq(projects.status, 'published'),
+        eq(projectLinks.kind, 'repository'),
+      ),
+    )
+  const results: Array<{ coordinate: string; error?: string }> = []
+  for (const link of links) {
+    const match =
+      /^https:\/\/github\.com\/([a-z0-9-]+)\/([a-z0-9_.-]+)\/?$/i.exec(link.url)
+    if (!match) continue
+    const owner = match[1].toLowerCase()
+    const name = match[2].replace(/\.git$/i, '').toLowerCase()
+    const coordinate = `${owner}/${name}`
+    const existingLink = await db.query.projectRepositories.findFirst({
+      where: and(
+        eq(projectRepositories.projectId, link.projectId),
+        eq(projectRepositories.isDefault, true),
+      ),
+    })
+    if (existingLink) continue
+    try {
+      let repository = await db.query.repositories.findFirst({
+        where: and(
+          sql`lower(${repositories.owner}) = ${owner}`,
+          sql`lower(${repositories.name}) = ${name}`,
+        ),
+      })
+      if (!repository) {
+        await collect(coordinate)
+        repository = await db.query.repositories.findFirst({
+          where: and(
+            sql`lower(${repositories.owner}) = ${owner}`,
+            sql`lower(${repositories.name}) = ${name}`,
+          ),
+        })
+      }
+      if (!repository)
+        throw new Error(
+          'Repository identity could not be resolved; check the canonical GitHub URL.',
+        )
+      await db
+        .insert(projectRepositories)
+        .values({
+          projectId: link.projectId,
+          repositoryId: repository.id,
+          isDefault: true,
+        })
+        .onConflictDoUpdate({
+          target: [
+            projectRepositories.projectId,
+            projectRepositories.repositoryId,
+          ],
+          set: { isDefault: true },
+        })
+      results.push({ coordinate })
+    } catch (error) {
+      results.push({
+        coordinate,
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Repository discovery failed',
+      })
+    }
+  }
+  return results
 }
 
 export async function recordCollectionFailure(
