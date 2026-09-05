@@ -10,9 +10,12 @@ export const Route = createFileRoute('/preview/$project')({
       if (!data) throw notFound()
       return data
     } catch (error) {
-      if (error && typeof error === 'object' && 'isNotFound' in error)
+      if (!(error instanceof Error) || error.message !== 'UNAUTHORIZED')
         throw error
-      throw redirect({ to: '/sign-in' })
+      throw redirect({
+        to: '/sign-in',
+        search: { next: `/preview/${params.project}` },
+      })
     }
   },
   head: () => ({

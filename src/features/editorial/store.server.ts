@@ -16,6 +16,8 @@ import {
   repositories,
   stackItems,
   stacks,
+  submissions,
+  moderationEvents,
 } from '../../db/schema'
 import type { EditorIdentity } from './auth.server'
 import { metricHealth, validatePublishable } from './model'
@@ -150,6 +152,11 @@ async function hydrateProjects(
             stars: metric.momentum.stars,
             absolute7d: metric.momentum.absolute7d,
             absolute30d: metric.momentum.absolute30d,
+            absolute49d: metric.momentum.absolute49d,
+            relative49d: metric.momentum.relative49d,
+            weeklyWindowStart: iso(metric.momentum.weeklyWindowStart),
+            monthlyWindowStart: iso(metric.momentum.monthlyWindowStart),
+            sevenWeekWindowStart: iso(metric.momentum.sevenWeekWindowStart),
             relative7d: metric.momentum.relative7d,
             relative30d: metric.momentum.relative30d,
             score: metric.momentum.score,
@@ -391,6 +398,21 @@ export async function setPublication(
         throw new Error(`Project is not publishable: ${missing.join(', ')}`)
     }
     const nextStatus = publish ? 'published' : 'draft'
+    const linkedSubmissions = await tx
+      .select()
+      .from(submissions)
+      .where(eq(submissions.projectId, projectId))
+      .for('update')
+    if (
+      publish &&
+      linkedSubmissions.some(
+        (item) => !['approved', 'published'].includes(item.status),
+      )
+    ) {
+      throw new Error(
+        'The linked community submission must be approved before publication.',
+      )
+    }
     const [updated] = await tx
       .update(projects)
       .set({
@@ -418,6 +440,22 @@ export async function setPublication(
       before: snapshot(project),
       after: snapshot(updated),
     })
+    for (const item of linkedSubmissions) {
+      await tx
+        .update(submissions)
+        .set({
+          status: publish ? 'published' : 'approved',
+          moderationReason: reason,
+          updatedAt: new Date(),
+        })
+        .where(eq(submissions.id, item.id))
+      await tx.insert(moderationEvents).values({
+        actorId: actor.id,
+        submissionId: item.id,
+        action: publish ? 'moderation.published' : 'moderation.unpublished',
+        reason,
+      })
+    }
     return { id: projectId, status: nextStatus, revision }
   })
 }

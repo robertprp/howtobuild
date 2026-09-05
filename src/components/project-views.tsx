@@ -1,4 +1,10 @@
 import type { PublicProject } from '../features/editorial/model'
+import {
+  periodDelta,
+  periodLabel,
+  periodStart,
+} from '../features/github/period'
+import type { TrendingPeriod } from '../features/github/period'
 
 export function ProjectMark({
   project,
@@ -34,12 +40,14 @@ export function TrendingRow({
   period = 'week',
 }: {
   project: PublicProject
-  rank: number
-  period?: 'week' | 'month'
+  rank?: number
+  period?: TrendingPeriod
 }) {
   return (
     <a className="trending-row" href={`/projects/${project.slug}`}>
-      <span className="rank">{String(rank).padStart(2, '0')}</span>
+      <span className="rank">
+        {rank === undefined ? '—' : String(rank).padStart(2, '0')}
+      </span>
       <ProjectMark project={project} />
       <span className="row-copy">
         <strong>{project.name}</strong>
@@ -63,12 +71,13 @@ export function MomentumSummary({
   period = 'week',
 }: {
   project: PublicProject
-  period?: 'week' | 'month'
+  period?: TrendingPeriod
 }) {
   const momentum = project.momentum
   if (!momentum)
     return <span className="metric-unavailable">History starts after sync</span>
-  const delta = period === 'week' ? momentum.absolute7d : momentum.absolute30d
+  const delta = momentum[periodDelta[period]]
+  const start = momentum[periodStart[period]]
   if (delta === null)
     return (
       <span className="metric-unavailable">
@@ -79,8 +88,23 @@ export function MomentumSummary({
     <span className="momentum-summary">
       <strong>+{compact(delta)}</strong>
       <span>
-        {period === 'week' ? '7 days' : '30 days'} · ★ {compact(momentum.stars)}
+        {periodLabel[period]} · ★ {compact(momentum.stars)}
       </span>
+      {start ? (
+        <span>
+          {new Date(start).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            timeZone: 'UTC',
+          })}
+          –
+          {new Date(momentum.windowEnd).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            timeZone: 'UTC',
+          })}
+        </span>
+      ) : null}
     </span>
   )
 }

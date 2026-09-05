@@ -41,6 +41,7 @@ export const Route = createFileRoute('/sitemap.xml')({
           })),
           { path: '/trending', lastmod: undefined },
           { path: '/trending?period=month', lastmod: undefined },
+          { path: '/trending?period=seven-weeks', lastmod: undefined },
           { path: '/stacks', lastmod: undefined },
           { path: '/methodology', lastmod: undefined },
           { path: '/about', lastmod: undefined },

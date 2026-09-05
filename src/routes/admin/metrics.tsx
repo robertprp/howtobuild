@@ -9,8 +9,10 @@ export const Route = createFileRoute('/admin/metrics')({
   loader: async () => {
     try {
       return await getMetricsData()
-    } catch {
-      throw redirect({ to: '/sign-in' })
+    } catch (error) {
+      if (!(error instanceof Error) || error.message !== 'UNAUTHORIZED')
+        throw error
+      throw redirect({ to: '/sign-in', search: { next: '/admin/metrics' } })
     }
   },
   head: () => ({

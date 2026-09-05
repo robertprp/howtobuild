@@ -6,8 +6,10 @@ export const Route = createFileRoute('/admin/')({
   loader: async () => {
     try {
       return await getEditorData()
-    } catch {
-      throw redirect({ to: '/sign-in' })
+    } catch (error) {
+      if (!(error instanceof Error) || error.message !== 'UNAUTHORIZED')
+        throw error
+      throw redirect({ to: '/sign-in', search: { next: '/admin' } })
     }
   },
   head: () => ({
@@ -29,6 +31,9 @@ function AdminHome() {
           <h1>Good morning, {editor.name.split(' ')[0]}.</h1>
         </div>
         <div className="editor-actions">
+          <a className="button secondary" href="/admin/submissions">
+            Moderation queue
+          </a>
           <a className="button secondary" href="/admin/metrics">
             Metric health
           </a>

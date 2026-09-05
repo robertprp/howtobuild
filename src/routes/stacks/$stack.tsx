@@ -3,6 +3,7 @@ import { createFileRoute, notFound } from '@tanstack/react-router'
 import { ProjectMark } from '../../components/project-views'
 import { SiteFooter } from '../../components/site-chrome'
 import { getStackData } from '../../features/stacks/stack.functions'
+import { StackStarter } from '../../components/stack-starter'
 
 export const Route = createFileRoute('/stacks/$stack')({
   loader: async ({ params }) => {
@@ -71,6 +72,7 @@ function StackPage() {
               <p>{stack.targetUser}</p>
             </div>
           </section>
+          <StackStarter key={stack.id} stack={stack} />
 
           <section className="stack-map" aria-labelledby="responsibility-map">
             <div className="section-heading">

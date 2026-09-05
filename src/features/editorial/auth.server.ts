@@ -15,6 +15,7 @@ export type EditorIdentity = {
 export async function requireEditor(request: Request): Promise<EditorIdentity> {
   const session = await auth.api.getSession({ headers: request.headers })
   if (!session?.user) throw new Error('UNAUTHORIZED')
+  if (!session.user.emailVerified) throw new Error('FORBIDDEN')
 
   const db = getDb()
   const directRole = await db.query.editorRoles.findFirst({

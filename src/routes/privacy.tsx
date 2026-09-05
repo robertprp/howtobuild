@@ -12,7 +12,7 @@ export const Route = createFileRoute('/privacy')({
 function Privacy() {
   return (
     <ContentPage
-      eyebrow="Effective September 4, 2026"
+      eyebrow="Effective September 5, 2026"
       title="Privacy"
       lede="We collect the minimum operational information needed to run and improve this field guide."
     >
@@ -38,10 +38,25 @@ function Privacy() {
       <section>
         <h2>Accounts and providers</h2>
         <p>
-          Editor accounts store identity, session, and security records required
-          for authentication. OAuth and email providers process information
-          under their own policies. Community accounts are not part of the
-          public beta.
+          Contributor and editor accounts store identity, session, and security
+          records required for authentication, including session IP and browser
+          information. OAuth and email providers process information under their
+          own policies. You can review active sessions and revoke other sessions
+          from your account page.
+        </p>
+      </section>
+      <section>
+        <h2>Community contributions</h2>
+        <p>
+          We retain submitted project details, edit suggestions, review
+          responses, moderation decisions, and abuse reports for editorial
+          review and accountability. Contributors can see their own contribution
+          history; editors can review submissions and reports. Please do not
+          include credentials or sensitive personal information. Anti-abuse
+          counters use hashed account and IP identifiers, separate from
+          authentication records. Choosing a stack or writing a starter prompt
+          happens in your browser and does not submit that prompt to a
+          coding-assistant provider.
         </p>
       </section>
       <section>

@@ -43,6 +43,20 @@
       "when": 1788535721069,
       "tag": "0005_phase_3_stacks",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1788537267169,
+      "tag": "0006_phase_4_contributions",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1788595313165,
+      "tag": "0007_contribution_completion_and_stack_starters",
+      "breakpoints": true
     }
   ]
 }

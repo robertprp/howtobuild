@@ -20,9 +20,12 @@ export const Route = createFileRoute('/admin/projects/$project')({
       const history = await getHistoryData({ data: { projectId: project.id } })
       return { ...desk, project, history }
     } catch (error) {
-      if (error && typeof error === 'object' && 'isNotFound' in error)
+      if (!(error instanceof Error) || error.message !== 'UNAUTHORIZED')
         throw error
-      throw redirect({ to: '/sign-in' })
+      throw redirect({
+        to: '/sign-in',
+        search: { next: `/admin/projects/${params.project}` },
+      })
     }
   },
   head: () => ({

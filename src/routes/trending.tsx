@@ -3,12 +3,19 @@ import { createFileRoute } from '@tanstack/react-router'
 import { TrendingRow } from '../components/project-views'
 import { SiteFooter } from '../components/site-chrome'
 import { getTrendingData } from '../features/discovery/discovery.functions'
+import { periodLabel } from '../features/github/period'
+import type { TrendingPeriod } from '../features/github/period'
 
-type TrendingSearch = { period: 'week' | 'month'; category?: string }
+type TrendingSearch = { period: TrendingPeriod; category?: string }
 
 export const Route = createFileRoute('/trending')({
   validateSearch: (search: Record<string, unknown>): TrendingSearch => ({
-    period: search.period === 'month' ? 'month' : 'week',
+    period:
+      search.period === 'seven-weeks'
+        ? 'seven-weeks'
+        : search.period === 'month'
+          ? 'month'
+          : 'week',
     category: typeof search.category === 'string' ? search.category : undefined,
   }),
   loaderDeps: ({ search }) => search,
@@ -19,7 +26,7 @@ export const Route = createFileRoute('/trending')({
   head: ({ loaderData }) => ({
     meta: [
       {
-        title: `Trending this ${loaderData?.period ?? 'week'} — HowToBuild.dev`,
+        title: `Most GitHub stars gained: ${periodLabel[loaderData?.period ?? 'week']} — HowToBuild.dev`,
       },
       {
         name: 'description',
@@ -31,8 +38,8 @@ export const Route = createFileRoute('/trending')({
       {
         rel: 'canonical',
         href:
-          loaderData?.period === 'month'
-            ? 'https://howtobuild.dev/trending?period=month'
+          loaderData && loaderData.period !== 'week'
+            ? `https://howtobuild.dev/trending?period=${loaderData.period}`
             : 'https://howtobuild.dev/trending',
       },
     ],
@@ -47,10 +54,11 @@ function TrendingPage() {
       <main className="shell discovery-page">
         <header className="discovery-heading">
           <p className="eyebrow">Measured momentum</p>
-          <h1>Trending this {data.period}.</h1>
+          <h1>Most stars gained.</h1>
           <p className="lede">
-            Ranked from stored aggregate observations—not lifetime popularity.
-            Anomalous and stale repositories are excluded automatically.
+            {periodLabel[data.period]}, ranked by net new GitHub stars among
+            projects in our catalog. Each result shows its actual observation
+            dates. Anomalous and stale repositories are excluded.
           </p>
         </header>
         <form className="trend-controls" method="get">
@@ -64,6 +72,15 @@ function TrendingPage() {
                 defaultChecked={data.period === 'week'}
               />{' '}
               This week
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="period"
+                value="seven-weeks"
+                defaultChecked={data.period === 'seven-weeks'}
+              />
+              Last 7 weeks
             </label>
             <label>
               <input
@@ -125,11 +142,10 @@ function TrendingPage() {
             <h2>History still forming.</h2>
             <p>These projects are visible without an extrapolated rank.</p>
             <div className="trending-list">
-              {data.earlySignals.map((project, index) => (
+              {data.earlySignals.map((project) => (
                 <TrendingRow
                   key={project.id}
                   project={project}
-                  rank={index + 1}
                   period={data.period}
                 />
               ))}

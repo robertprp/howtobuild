@@ -90,6 +90,7 @@ async function hydrateStacks(rows: Array<typeof stacks.$inferSelect>) {
     openSourceSummary: stack.openSourceSummary,
     costSummary: stack.costSummary,
     tradeoffs: stack.tradeoffs,
+    starterOptions: stack.starterOptions,
     publishedAt: stack.publishedAt?.toISOString() ?? null,
     updatedAt: stack.updatedAt.toISOString(),
     items: items

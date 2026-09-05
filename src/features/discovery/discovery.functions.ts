@@ -10,6 +10,7 @@ import {
   listPublishedProjects,
 } from '../editorial/store.server'
 import { searchDiscovery } from './search.server'
+import { periodDelta } from '../github/period'
 
 const publicHeaders = new Headers({
   'Cache-Control': 'public, max-age=0, must-revalidate',
@@ -41,7 +42,7 @@ export const getSearchData = createServerFn({ method: 'GET' })
 export const getTrendingData = createServerFn({ method: 'GET' })
   .validator(
     z.object({
-      period: z.enum(['week', 'month']).default('week'),
+      period: z.enum(['week', 'month', 'seven-weeks']).default('week'),
       filters: filterSchema.default({}),
     }),
   )
@@ -57,9 +58,7 @@ export const getTrendingData = createServerFn({ method: 'GET' })
         if (!momentum || ['stale', 'disabled'].includes(momentum.health))
           return false
         if (momentum.anomaly) return false
-        if (data.period === 'week' && momentum.absolute7d === null) return false
-        if (data.period === 'month' && momentum.absolute30d === null)
-          return false
+        if (momentum[periodDelta[data.period]] === null) return false
         if (
           data.filters.facet &&
           !project.facets.some((facet) => facet.slug === data.filters.facet)
@@ -80,10 +79,10 @@ export const getTrendingData = createServerFn({ method: 'GET' })
         return true
       })
       .sort((a, b) => {
-        const key = data.period === 'week' ? 'absolute7d' : 'absolute30d'
+        const key = periodDelta[data.period]
         return (
-          (b.momentum?.score ?? 0) - (a.momentum?.score ?? 0) ||
-          (b.momentum?.[key] ?? 0) - (a.momentum?.[key] ?? 0)
+          (b.momentum?.[key] ?? 0) - (a.momentum?.[key] ?? 0) ||
+          a.name.localeCompare(b.name)
         )
       })
     return {
@@ -93,7 +92,9 @@ export const getTrendingData = createServerFn({ method: 'GET' })
       categories: allCategories,
       earlySignals: allProjects.filter(
         (project) =>
-          project.momentum?.confidence === 'early' &&
+          project.momentum !== null &&
+          project.momentum[periodDelta[data.period]] === null &&
+          !project.momentum.anomaly &&
           !['stale', 'disabled'].includes(project.momentum.health),
       ),
     }
