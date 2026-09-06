@@ -35,7 +35,7 @@ function AdminHome() {
             Operations
           </a>
           <a className="button secondary" href="/admin/submissions">
-            Moderation queue
+            Review submissions
           </a>
           <a className="button secondary" href="/admin/metrics">
             Metric health

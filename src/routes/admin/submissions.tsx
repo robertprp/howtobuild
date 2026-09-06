@@ -1,5 +1,11 @@
 import { useMutation } from '@tanstack/react-query'
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
+import { useState } from 'react'
+import {
+  moderationStatusSchema,
+  moderationTransitions,
+} from '../../features/contributions/model'
+import type { ModerationStatus } from '../../features/contributions/model'
 import { getModerationData } from '../../features/contributions/contribution.functions'
 import { orpc } from '../../lib/orpc-client'
 
@@ -20,25 +26,51 @@ export const Route = createFileRoute('/admin/submissions')({
     ],
   }),
   component: ModerationQueue,
+  errorComponent: () => (
+    <main className="shell admin-page">
+      <h1>Review dashboard unavailable</h1>
+      <p>
+        You need a verified account with editor or admin access. If you already
+        have access, try again shortly.
+      </p>
+      <a href="/sign-in?next=%2Fadmin%2Fsubmissions">
+        Sign in with an authorized account
+      </a>
+    </main>
+  ),
 })
+
+function ReviewDate({ value }: { value: Date | string }) {
+  const date = new Date(value)
+  return (
+    <time dateTime={date.toISOString()}>
+      {date.toISOString().slice(0, 16).replace('T', ' ')} UTC
+    </time>
+  )
+}
 
 function ModerationControls({
   kind,
   id,
+  currentStatus,
 }: {
   kind: 'submission' | 'suggestion'
   id: string
+  currentStatus: string
 }) {
+  const router = useRouter()
   const mutation = useMutation(orpc.contributions.moderate.mutationOptions())
-  function change(
-    status: 'under_review' | 'changes_requested' | 'approved' | 'rejected',
-    form: HTMLFormElement,
-  ) {
+  function change(status: ModerationStatus, form: HTMLFormElement) {
     if (!form.reportValidity()) return
     const reason = String(new FormData(form).get('reason'))
     mutation.mutate(
       { kind, id, status, reason },
-      { onSuccess: () => window.location.reload() },
+      {
+        onSuccess: async () => {
+          form.reset()
+          await router.invalidate()
+        },
+      },
     )
   }
   return (
@@ -48,12 +80,17 @@ function ModerationControls({
     >
       <label>
         Decision note
-        <textarea name="reason" minLength={8} required rows={2} />
+        <textarea
+          name="reason"
+          minLength={8}
+          maxLength={500}
+          required
+          rows={3}
+          placeholder="Explain your decision to the contributor…"
+        />
       </label>
       <div>
-        {(
-          ['under_review', 'changes_requested', 'approved', 'rejected'] as const
-        ).map((status) => (
+        {(moderationTransitions[currentStatus] ?? []).map((status) => (
           <button
             className={status === 'approved' ? 'button' : 'button secondary'}
             type="button"
@@ -65,13 +102,54 @@ function ModerationControls({
           </button>
         ))}
       </div>
-      {mutation.error ? <p>{mutation.error.message}</p> : null}
+      {mutation.error ? <p role="alert">{mutation.error.message}</p> : null}
     </form>
   )
 }
 
 function ModerationQueue() {
   const data = Route.useLoaderData()
+  const router = useRouter()
+  const [search, setSearch] = useState('')
+  const [status, setStatus] = useState('pending')
+  const [category, setCategory] = useState('all')
+  const [sort, setSort] = useState('oldest')
+  const [page, setPage] = useState(1)
+  const filtered = data.submissions
+    .filter(({ submission, submitterName, submitterEmail, categoryName }) => {
+      const matchesStatus =
+        status === 'all' ||
+        (status === 'pending'
+          ? [
+              'submitted',
+              'under_review',
+              'changes_requested',
+              'approved',
+            ].includes(submission.status)
+          : submission.status === status)
+      return (
+        matchesStatus &&
+        (category === 'all' || categoryName === category) &&
+        [
+          JSON.stringify(submission.payload),
+          submission.repositoryUrl,
+          submitterName,
+          submitterEmail,
+        ]
+          .join(' ')
+          .toLowerCase()
+          .includes(search.trim().toLowerCase())
+      )
+    })
+    .sort(
+      (a, b) =>
+        (new Date(a.submission.createdAt).getTime() -
+          new Date(b.submission.createdAt).getTime()) *
+        (sort === 'oldest' ? 1 : -1),
+    )
+  const pages = Math.max(1, Math.ceil(filtered.length / 10))
+  const currentPage = Math.min(page, pages)
+  const visible = filtered.slice((currentPage - 1) * 10, currentPage * 10)
   const draft = useMutation(orpc.contributions.prepareDraft.mutationOptions())
   const applied = useMutation(
     orpc.contributions.completeSuggestion.mutationOptions(),
@@ -84,16 +162,169 @@ function ModerationQueue() {
           <a href="/admin">← Editorial desk</a>
           <p className="eyebrow">Community moderation</p>
           <h1>Submission queue</h1>
+          <p>
+            Review community projects, leave feedback, and prepare approved
+            projects for publication.
+          </p>
         </div>
       </header>
+      <div className="review-summary" aria-label="Queue overview">
+        {(
+          [
+            'submitted',
+            'under_review',
+            'changes_requested',
+            'approved',
+          ] as const
+        ).map((value) => (
+          <button
+            key={value}
+            type="button"
+            aria-pressed={status === value}
+            onClick={() => {
+              setStatus(value)
+              setPage(1)
+            }}
+          >
+            <strong>
+              {
+                data.submissions.filter(
+                  ({ submission }) => submission.status === value,
+                ).length
+              }
+            </strong>
+            <span>{value.replaceAll('_', ' ')}</span>
+          </button>
+        ))}
+      </div>
+      <nav className="review-links" aria-label="Review queues">
+        <a href="#project-submissions">Projects ({data.submissions.length})</a>
+        <a href="#edit-suggestions">
+          Corrections (
+          {
+            data.suggestions.filter(
+              ({ suggestion }) =>
+                suggestion.status !== 'published' &&
+                suggestion.status !== 'rejected',
+            ).length
+          }{' '}
+          pending)
+        </a>
+        <a href="#abuse-reports">
+          Reports (
+          {data.reports.filter((report) => report.status === 'open').length}{' '}
+          open)
+        </a>
+      </nav>
       <section className="moderation-list">
         <p role="alert">
           {draft.error?.message ||
             applied.error?.message ||
             resolve.error?.message}
         </p>
-        <h2>Project submissions</h2>
-        {data.submissions.map(
+        <h2 id="project-submissions">Project submissions</h2>
+        <p>
+          Approval does not publish a project. Prepare its editorial draft,
+          verify sources, then publish from the editor.
+        </p>
+        <div className="review-filters">
+          <label>
+            Search submissions
+            <input
+              type="search"
+              value={search}
+              placeholder="Project, repository, or contributor"
+              onChange={(event) => {
+                setSearch(event.target.value)
+                setPage(1)
+              }}
+            />
+          </label>
+          <label>
+            Status
+            <select
+              value={status}
+              onChange={(event) => {
+                setStatus(event.target.value)
+                setPage(1)
+              }}
+            >
+              <option value="pending">Pending review / publication</option>
+              <option value="all">All statuses</option>
+              {moderationStatusSchema.options.map((value) => (
+                <option key={value} value={value}>
+                  {value.replaceAll('_', ' ')}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Category
+            <select
+              value={category}
+              onChange={(event) => {
+                setCategory(event.target.value)
+                setPage(1)
+              }}
+            >
+              <option value="all">All categories</option>
+              {[
+                ...new Set(
+                  data.submissions
+                    .map((entry) => entry.categoryName)
+                    .filter((name): name is string => Boolean(name)),
+                ),
+              ]
+                .sort()
+                .map((name) => (
+                  <option key={name}>{name}</option>
+                ))}
+            </select>
+          </label>
+          <label>
+            Order
+            <select
+              value={sort}
+              onChange={(event) => {
+                setSort(event.target.value)
+                setPage(1)
+              }}
+            >
+              <option value="oldest">Oldest first</option>
+              <option value="newest">Newest first</option>
+            </select>
+          </label>
+        </div>
+        <p role="status">
+          {filtered.length} matching submissions · Page {currentPage} of {pages}
+        </p>
+        {!visible.length ? (
+          <div className="review-empty">
+            <h3>
+              {data.submissions.length
+                ? 'No matching submissions'
+                : 'Your queue is clear'}
+            </h3>
+            <p>
+              {data.submissions.length
+                ? 'Try another search, category, or status.'
+                : 'Projects submitted by the community will appear here.'}
+            </p>
+            <button
+              type="button"
+              className="button secondary"
+              onClick={() => {
+                setSearch('')
+                setCategory('all')
+                setStatus('all')
+                setPage(1)
+              }}
+            >
+              Show all submissions
+            </button>
+          </div>
+        ) : null}
+        {visible.map(
           ({ submission, submitterName, submitterEmail, categoryName }) => {
             const payload = submission.payload as {
               name?: string
@@ -115,6 +346,11 @@ function ModerationQueue() {
                   <p>
                     {submitterName} · {submitterEmail} ·{' '}
                     {categoryName ?? 'Unknown category'}
+                  </p>
+                  <p className="review-date">
+                    Submitted <ReviewDate value={submission.createdAt} />
+                    <br />
+                    Updated <ReviewDate value={submission.updatedAt} />
                   </p>
                   <a href={submission.repositoryUrl}>
                     {submission.repositoryUrl}
@@ -140,7 +376,11 @@ function ModerationQueue() {
                 </dl>
                 <div>
                   {submission.status !== 'published' ? (
-                    <ModerationControls kind="submission" id={submission.id} />
+                    <ModerationControls
+                      kind="submission"
+                      id={submission.id}
+                      currentStatus={submission.status}
+                    />
                   ) : null}
                   {submission.status === 'approved' ? (
                     <button
@@ -171,7 +411,8 @@ function ModerationQueue() {
                     .filter((entry) => entry.submissionId === submission.id)
                     .map((entry) => (
                       <p key={entry.id}>
-                        {entry.action}: {entry.reason}
+                        <ReviewDate value={entry.createdAt} /> · {entry.action}:{' '}
+                        {entry.reason}
                       </p>
                     ))}
                 </details>
@@ -179,7 +420,26 @@ function ModerationQueue() {
             )
           },
         )}
-        <h2>Edit suggestions</h2>
+        {pages > 1 ? (
+          <nav className="review-links" aria-label="Submission pages">
+            <button
+              className="button secondary"
+              disabled={currentPage === 1}
+              onClick={() => setPage(currentPage - 1)}
+            >
+              Previous
+            </button>
+            <button
+              className="button secondary"
+              disabled={currentPage === pages}
+              onClick={() => setPage(currentPage + 1)}
+            >
+              Next
+            </button>
+          </nav>
+        ) : null}
+        <h2 id="edit-suggestions">Edit suggestions</h2>
+        {!data.suggestions.length ? <p>No corrections submitted yet.</p> : null}
         {data.suggestions.map(
           ({ suggestion, submitterName, projectName, projectSlug }) => {
             const payload = suggestion.payload as {
@@ -216,7 +476,11 @@ function ModerationQueue() {
                 </dl>
                 <div>
                   {suggestion.status !== 'published' ? (
-                    <ModerationControls kind="suggestion" id={suggestion.id} />
+                    <ModerationControls
+                      kind="suggestion"
+                      id={suggestion.id}
+                      currentStatus={suggestion.status}
+                    />
                   ) : null}
                   {suggestion.status === 'approved' ? (
                     <>
@@ -236,13 +500,22 @@ function ModerationQueue() {
                                 new FormData(event.currentTarget).get('reason'),
                               ),
                             },
-                            { onSuccess: () => window.location.reload() },
+                            {
+                              onSuccess: async () => {
+                                await router.invalidate()
+                              },
+                            },
                           )
                         }}
                       >
                         <label>
                           Verified correction note
-                          <textarea name="reason" minLength={8} required />
+                          <textarea
+                            name="reason"
+                            minLength={8}
+                            maxLength={500}
+                            required
+                          />
                         </label>
                         <button className="button" disabled={applied.isPending}>
                           Mark correction applied
@@ -257,7 +530,8 @@ function ModerationQueue() {
                     .filter((entry) => entry.editSuggestionId === suggestion.id)
                     .map((entry) => (
                       <p key={entry.id}>
-                        {entry.action}: {entry.reason}
+                        <ReviewDate value={entry.createdAt} /> · {entry.action}:{' '}
+                        {entry.reason}
                       </p>
                     ))}
                 </details>
@@ -265,7 +539,8 @@ function ModerationQueue() {
             )
           },
         )}
-        <h2>Abuse reports</h2>
+        <h2 id="abuse-reports">Abuse reports</h2>
+        {!data.reports.length ? <p>No abuse reports.</p> : null}
         {data.reports.map((report) => (
           <article key={report.id}>
             <header>
@@ -287,13 +562,22 @@ function ModerationQueue() {
                         new FormData(event.currentTarget).get('reason'),
                       ),
                     },
-                    { onSuccess: () => window.location.reload() },
+                    {
+                      onSuccess: async () => {
+                        await router.invalidate()
+                      },
+                    },
                   )
                 }}
               >
                 <label>
                   Resolution note
-                  <textarea name="reason" minLength={8} required />
+                  <textarea
+                    name="reason"
+                    minLength={8}
+                    maxLength={500}
+                    required
+                  />
                 </label>
                 <button className="button" disabled={resolve.isPending}>
                   Resolve report

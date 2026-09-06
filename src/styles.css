@@ -1387,6 +1387,74 @@ label small {
 .moderation-list {
   padding-top: var(--space-5);
 }
+.review-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-block: 1.5rem;
+}
+.review-summary button {
+  text-align: left;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  padding: 1rem;
+  cursor: pointer;
+}
+.review-summary button[aria-pressed='true'] {
+  border-color: var(--ink);
+}
+.review-summary strong {
+  display: block;
+  font: 600 2rem/1.2 var(--display);
+}
+.review-summary span {
+  text-transform: capitalize;
+  font-size: 0.85rem;
+}
+.review-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  margin-block: 1rem;
+}
+.review-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-block: 1.5rem;
+}
+.review-filters label {
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+.review-filters input,
+.review-filters select {
+  width: 100%;
+  min-width: 0;
+}
+.review-empty {
+  border: 1px dashed var(--line);
+  padding: 1.5rem;
+}
+.review-date {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.moderation-list > article > * {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.moderation-list .contribution-history {
+  grid-column: 1 / -1;
+}
+.moderation-list .contribution-history pre {
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
 .contribution-list > h2,
 .moderation-list > h2 {
   margin-top: var(--space-5);

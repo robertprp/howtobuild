@@ -31,7 +31,8 @@
     "product:report": "tsx scripts/report-product-events.ts",
     "telemetry:check": "node --env-file=.env --import tsx scripts/check-telemetry.ts",
     "asset:process": "tsx scripts/process-asset.ts",
-    "editor:invite": "tsx scripts/invite-editor.ts"
+    "editor:invite": "tsx scripts/invite-editor.ts",
+    "admin:grant": "node --env-file-if-exists=.env --import tsx scripts/grant-admin.ts"
   },
   "dependencies": {
     "@better-auth-ui/core": "1.7.22",

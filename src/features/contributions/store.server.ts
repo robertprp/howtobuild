@@ -17,6 +17,7 @@ import {
 import type { EditorIdentity } from '../editorial/auth.server'
 import type { EditSuggestionInput, SubmissionInput } from './model'
 import { limitContribution } from './limits.server'
+import { moderationTransitions } from './model'
 
 type Contributor = { id: string; email: string; name: string }
 const activeStates = [
@@ -277,14 +278,6 @@ export async function listModerationQueue() {
   }
 }
 
-const transitions: Record<string, string[] | undefined> = {
-  submitted: ['under_review', 'changes_requested', 'approved', 'rejected'],
-  under_review: ['changes_requested', 'approved', 'rejected'],
-  changes_requested: ['under_review', 'rejected'],
-  approved: ['under_review', 'rejected'],
-  rejected: ['under_review'],
-}
-
 export async function moderateContribution(
   input: {
     kind: 'submission' | 'suggestion'
@@ -300,7 +293,11 @@ export async function moderateContribution(
       await tx.select().from(table).where(eq(table.id, input.id)).for('update')
     ).at(0)
     if (!current) throw new ORPCError('NOT_FOUND')
-    if (!transitions[current.status]?.includes(input.status))
+    if (
+      !moderationTransitions[current.status]?.some(
+        (status) => status === input.status,
+      )
+    )
       throw new ORPCError('CONFLICT', {
         message: 'That state change is not available. Refresh the queue.',
       })

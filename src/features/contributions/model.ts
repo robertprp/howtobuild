@@ -36,6 +36,18 @@ export const moderationStatusSchema = z.enum([
   'rejected',
 ])
 
+export type ModerationStatus = z.infer<typeof moderationStatusSchema>
+export const moderationTransitions: Record<
+  string,
+  ModerationStatus[] | undefined
+> = {
+  submitted: ['under_review', 'changes_requested', 'approved', 'rejected'],
+  under_review: ['changes_requested', 'approved', 'rejected'],
+  changes_requested: ['under_review', 'rejected'],
+  approved: ['under_review', 'rejected'],
+  rejected: ['under_review'],
+}
+
 export const responseSchema = z.object({
   kind: z.enum(['submission', 'suggestion']),
   id: z.string().uuid(),
