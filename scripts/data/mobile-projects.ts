@@ -1,0 +1,163 @@
+// Maintainer documentation and live GitHub metadata reviewed 2026-09-06.
+// No historical growth is inferred from today's total star count.
+export const mobileProjects = [
+  {
+    slug: 'react-native-executorch',
+    name: 'React Native ExecuTorch',
+    repo: 'software-mansion/react-native-executorch',
+    website: 'https://docs.swmansion.com/react-native-executorch/',
+    feature: 'On-device AI',
+    language: 'typescript',
+    license: 'MIT; bundled ExecuTorch BSD-3-Clause',
+    summary: 'Run AI models locally in React Native using ExecuTorch.',
+    fit: 'Mobile teams evaluating offline inference and local model features',
+    caution:
+      'Requires the New Architecture and supported devices. Budget for model memory, downloads, battery use, and model-specific license terms.',
+  },
+  {
+    slug: 'nitro-modules',
+    name: 'Nitro Modules',
+    repo: 'margelo/nitro',
+    website: 'https://nitro.margelo.com',
+    feature: 'Native modules',
+    language: 'typescript',
+    license: 'MIT',
+    summary:
+      'Typed native module bindings for React Native using C++, Swift, and Kotlin.',
+    fit: 'Library authors integrating native code with React Native',
+    caution:
+      'Requires native toolchain expertise; unnecessary when a maintained library already exposes the needed platform API.',
+  },
+  {
+    slug: 'react-native-reanimated',
+    name: 'React Native Reanimated',
+    repo: 'software-mansion/react-native-reanimated',
+    website: 'https://docs.swmansion.com/react-native-reanimated/',
+    feature: 'Animation',
+    language: 'typescript',
+    license: 'MIT',
+    summary: 'UI-thread animations and interactions for React Native.',
+    fit: 'Gesture-driven interfaces and animated native screens',
+    caution:
+      'Reanimated 4 requires the React Native New Architecture; check the compatibility matrix before upgrading.',
+  },
+  {
+    slug: 'flashlist',
+    name: 'FlashList',
+    repo: 'Shopify/flash-list',
+    website: 'https://shopify.github.io/flash-list/',
+    feature: 'Lists and scrolling',
+    language: 'typescript',
+    license: 'MIT',
+    summary: 'Recycling list components for data-heavy React Native screens.',
+    fit: 'Feeds, catalogs, and long scrolling collections',
+    caution:
+      'Recycling changes component-state assumptions; check the chosen version and native architecture requirements.',
+  },
+  {
+    slug: 'vision-camera',
+    name: 'VisionCamera',
+    repo: 'margelo/react-native-vision-camera',
+    website: 'https://visioncamera.margelo.com',
+    feature: 'Camera',
+    language: 'typescript',
+    license: 'MIT',
+    summary:
+      'Native camera capture and processing for React Native applications.',
+    fit: 'Products needing camera controls beyond a simple image picker',
+    caution:
+      'Requires native configuration and device permission handling; check build and plugin compatibility.',
+  },
+  {
+    slug: 'react-native-mmkv',
+    name: 'React Native MMKV',
+    repo: 'margelo/react-native-mmkv',
+    website: 'https://github.com/margelo/react-native-mmkv#readme',
+    feature: 'Local storage',
+    language: 'typescript',
+    license: 'MIT',
+    summary: 'Native key-value storage bindings for React Native.',
+    fit: 'Persisted preferences and small local caches',
+    caution:
+      'Not a relational database or a replacement for platform secure credential storage; verify native build requirements.',
+  },
+  {
+    slug: 'legend-list',
+    name: 'Legend List',
+    repo: 'LegendApp/legend-list',
+    website: 'https://www.legendapp.com/open-source/list/',
+    feature: 'Lists and scrolling',
+    language: 'typescript',
+    license: 'MIT',
+    summary: 'A list library for React Native and React interfaces.',
+    fit: 'Teams evaluating list rendering and scrolling behavior for complex feeds',
+    caution:
+      'Benchmark your own item layouts and validate platform support before replacing an existing list.',
+  },
+  {
+    slug: 'maestro',
+    name: 'Maestro',
+    repo: 'mobile-dev-inc/Maestro',
+    website: 'https://maestro.dev',
+    feature: 'Mobile testing',
+    language: 'kotlin',
+    license: 'Apache-2.0',
+    summary: 'End-to-end UI automation for mobile and web applications.',
+    fit: 'Repeatable onboarding and critical user-journey checks',
+    caution:
+      'Device orchestration and stable test data still need maintenance; hosted cloud execution has separate terms.',
+  },
+  {
+    slug: 'riverpod',
+    name: 'Riverpod',
+    repo: 'rrousselGit/riverpod',
+    website: 'https://riverpod.dev',
+    feature: 'State management',
+    language: 'dart',
+    license: 'MIT',
+    summary: 'Reactive state, caching, and data binding for Dart and Flutter.',
+    fit: 'Flutter applications with asynchronous data and shared state',
+    caution:
+      'Adds an application-state model; small screens may not need a dedicated state framework.',
+  },
+  {
+    slug: 'bloc',
+    name: 'Bloc',
+    repo: 'felangel/bloc',
+    website: 'https://bloclibrary.dev',
+    feature: 'State management',
+    language: 'dart',
+    license: 'MIT',
+    summary: 'Predictable state management for Dart and Flutter applications.',
+    fit: 'Teams wanting explicit state transitions and separated presentation logic',
+    caution:
+      'Explicit events and state types can add ceremony to simple application flows.',
+  },
+  {
+    slug: 'tamagui',
+    name: 'Tamagui',
+    repo: 'tamagui/tamagui',
+    website: 'https://tamagui.dev/docs/intro/introduction',
+    feature: 'Mobile UI',
+    language: 'typescript',
+    license: 'MIT',
+    summary: 'Shared styling and UI components for React and React Native.',
+    fit: 'Product teams sharing a design system between web and native apps',
+    caution:
+      'Compiler and framework integration need validation; optional commercial products are separate from the open-source core.',
+  },
+  {
+    slug: 'nativescript',
+    name: 'NativeScript',
+    repo: 'NativeScript/NativeScript',
+    website: 'https://docs.nativescript.org',
+    feature: 'Native frameworks',
+    language: 'typescript',
+    license: 'MIT',
+    summary:
+      'Build native applications with JavaScript or TypeScript and native platform APIs.',
+    fit: 'Web-language teams needing direct native API access',
+    caution:
+      'Native SDK knowledge and platform-specific debugging remain necessary.',
+  },
+]

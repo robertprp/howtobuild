@@ -27,7 +27,9 @@ import { Route as CategoryEcosystemRouteImport } from './routes/$category.$ecosy
 import { Route as AccountIndexRouteImport } from './routes/account/index'
 import { Route as AccountSubmissionsRouteImport } from './routes/account/submissions'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminLinksRouteImport } from './routes/admin/links'
 import { Route as AdminMetricsRouteImport } from './routes/admin/metrics'
+import { Route as AdminOperationsRouteImport } from './routes/admin/operations'
 import { Route as AdminSubmissionsRouteImport } from './routes/admin/submissions'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as ApiTelemetryRouteImport } from './routes/api/telemetry'
@@ -42,6 +44,7 @@ import { Route as SubmitGuidelinesRouteImport } from './routes/submit/guidelines
 import { Route as AdminProjectsProjectRouteImport } from './routes/admin/projects/$project'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiJobsGithubRouteImport } from './routes/api/jobs/github'
+import { Route as ApiJobsLinksRouteImport } from './routes/api/jobs/links'
 import { Route as ApiRpcSplatRouteImport } from './routes/api/rpc/$'
 import { Route as ProjectsProjectSuggestRouteImport } from './routes/projects/$project_.suggest'
 
@@ -135,9 +138,19 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminLinksRoute = AdminLinksRouteImport.update({
+  id: '/admin/links',
+  path: '/admin/links',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminMetricsRoute = AdminMetricsRouteImport.update({
   id: '/admin/metrics',
   path: '/admin/metrics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminOperationsRoute = AdminOperationsRouteImport.update({
+  id: '/admin/operations',
+  path: '/admin/operations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminSubmissionsRoute = AdminSubmissionsRouteImport.update({
@@ -210,6 +223,11 @@ const ApiJobsGithubRoute = ApiJobsGithubRouteImport.update({
   path: '/api/jobs/github',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiJobsLinksRoute = ApiJobsLinksRouteImport.update({
+  id: '/api/jobs/links',
+  path: '/api/jobs/links',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
   id: '/api/rpc/$',
   path: '/api/rpc/$',
@@ -238,7 +256,9 @@ export interface FileRoutesByFullPath {
   '/verify': typeof VerifyRoute
   '/$category/$ecosystem': typeof CategoryEcosystemRoute
   '/account/submissions': typeof AccountSubmissionsRoute
+  '/admin/links': typeof AdminLinksRoute
   '/admin/metrics': typeof AdminMetricsRoute
+  '/admin/operations': typeof AdminOperationsRoute
   '/admin/submissions': typeof AdminSubmissionsRoute
   '/api/health': typeof ApiHealthRoute
   '/api/telemetry': typeof ApiTelemetryRoute
@@ -255,6 +275,7 @@ export interface FileRoutesByFullPath {
   '/admin/projects/$project': typeof AdminProjectsProjectRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/jobs/github': typeof ApiJobsGithubRoute
+  '/api/jobs/links': typeof ApiJobsLinksRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/projects/$project/suggest': typeof ProjectsProjectSuggestRoute
 }
@@ -275,7 +296,9 @@ export interface FileRoutesByTo {
   '/verify': typeof VerifyRoute
   '/$category/$ecosystem': typeof CategoryEcosystemRoute
   '/account/submissions': typeof AccountSubmissionsRoute
+  '/admin/links': typeof AdminLinksRoute
   '/admin/metrics': typeof AdminMetricsRoute
+  '/admin/operations': typeof AdminOperationsRoute
   '/admin/submissions': typeof AdminSubmissionsRoute
   '/api/health': typeof ApiHealthRoute
   '/api/telemetry': typeof ApiTelemetryRoute
@@ -292,6 +315,7 @@ export interface FileRoutesByTo {
   '/admin/projects/$project': typeof AdminProjectsProjectRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/jobs/github': typeof ApiJobsGithubRoute
+  '/api/jobs/links': typeof ApiJobsLinksRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/projects/$project/suggest': typeof ProjectsProjectSuggestRoute
 }
@@ -313,7 +337,9 @@ export interface FileRoutesById {
   '/verify': typeof VerifyRoute
   '/$category/$ecosystem': typeof CategoryEcosystemRoute
   '/account/submissions': typeof AccountSubmissionsRoute
+  '/admin/links': typeof AdminLinksRoute
   '/admin/metrics': typeof AdminMetricsRoute
+  '/admin/operations': typeof AdminOperationsRoute
   '/admin/submissions': typeof AdminSubmissionsRoute
   '/api/health': typeof ApiHealthRoute
   '/api/telemetry': typeof ApiTelemetryRoute
@@ -330,6 +356,7 @@ export interface FileRoutesById {
   '/admin/projects/$project': typeof AdminProjectsProjectRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/jobs/github': typeof ApiJobsGithubRoute
+  '/api/jobs/links': typeof ApiJobsLinksRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/projects/$project_/suggest': typeof ProjectsProjectSuggestRoute
 }
@@ -352,7 +379,9 @@ export interface FileRouteTypes {
     | '/verify'
     | '/$category/$ecosystem'
     | '/account/submissions'
+    | '/admin/links'
     | '/admin/metrics'
+    | '/admin/operations'
     | '/admin/submissions'
     | '/api/health'
     | '/api/telemetry'
@@ -369,6 +398,7 @@ export interface FileRouteTypes {
     | '/admin/projects/$project'
     | '/api/auth/$'
     | '/api/jobs/github'
+    | '/api/jobs/links'
     | '/api/rpc/$'
     | '/projects/$project/suggest'
   fileRoutesByTo: FileRoutesByTo
@@ -389,7 +419,9 @@ export interface FileRouteTypes {
     | '/verify'
     | '/$category/$ecosystem'
     | '/account/submissions'
+    | '/admin/links'
     | '/admin/metrics'
+    | '/admin/operations'
     | '/admin/submissions'
     | '/api/health'
     | '/api/telemetry'
@@ -406,6 +438,7 @@ export interface FileRouteTypes {
     | '/admin/projects/$project'
     | '/api/auth/$'
     | '/api/jobs/github'
+    | '/api/jobs/links'
     | '/api/rpc/$'
     | '/projects/$project/suggest'
   id:
@@ -426,7 +459,9 @@ export interface FileRouteTypes {
     | '/verify'
     | '/$category/$ecosystem'
     | '/account/submissions'
+    | '/admin/links'
     | '/admin/metrics'
+    | '/admin/operations'
     | '/admin/submissions'
     | '/api/health'
     | '/api/telemetry'
@@ -443,6 +478,7 @@ export interface FileRouteTypes {
     | '/admin/projects/$project'
     | '/api/auth/$'
     | '/api/jobs/github'
+    | '/api/jobs/links'
     | '/api/rpc/$'
     | '/projects/$project_/suggest'
   fileRoutesById: FileRoutesById
@@ -463,7 +499,9 @@ export interface RootRouteChildren {
   TrendingRoute: typeof TrendingRoute
   VerifyRoute: typeof VerifyRoute
   AccountSubmissionsRoute: typeof AccountSubmissionsRoute
+  AdminLinksRoute: typeof AdminLinksRoute
   AdminMetricsRoute: typeof AdminMetricsRoute
+  AdminOperationsRoute: typeof AdminOperationsRoute
   AdminSubmissionsRoute: typeof AdminSubmissionsRoute
   ApiHealthRoute: typeof ApiHealthRoute
   ApiTelemetryRoute: typeof ApiTelemetryRoute
@@ -480,6 +518,7 @@ export interface RootRouteChildren {
   AdminProjectsProjectRoute: typeof AdminProjectsProjectRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiJobsGithubRoute: typeof ApiJobsGithubRoute
+  ApiJobsLinksRoute: typeof ApiJobsLinksRoute
   ApiRpcSplatRoute: typeof ApiRpcSplatRoute
   ProjectsProjectSuggestRoute: typeof ProjectsProjectSuggestRoute
 }
@@ -612,11 +651,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/links': {
+      id: '/admin/links'
+      path: '/admin/links'
+      fullPath: '/admin/links'
+      preLoaderRoute: typeof AdminLinksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/metrics': {
       id: '/admin/metrics'
       path: '/admin/metrics'
       fullPath: '/admin/metrics'
       preLoaderRoute: typeof AdminMetricsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/operations': {
+      id: '/admin/operations'
+      path: '/admin/operations'
+      fullPath: '/admin/operations'
+      preLoaderRoute: typeof AdminOperationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/submissions': {
@@ -717,6 +770,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiJobsGithubRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/jobs/links': {
+      id: '/api/jobs/links'
+      path: '/api/jobs/links'
+      fullPath: '/api/jobs/links'
+      preLoaderRoute: typeof ApiJobsLinksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/rpc/$': {
       id: '/api/rpc/$'
       path: '/api/rpc/$'
@@ -762,7 +822,9 @@ const rootRouteChildren: RootRouteChildren = {
   TrendingRoute: TrendingRoute,
   VerifyRoute: VerifyRoute,
   AccountSubmissionsRoute: AccountSubmissionsRoute,
+  AdminLinksRoute: AdminLinksRoute,
   AdminMetricsRoute: AdminMetricsRoute,
+  AdminOperationsRoute: AdminOperationsRoute,
   AdminSubmissionsRoute: AdminSubmissionsRoute,
   ApiHealthRoute: ApiHealthRoute,
   ApiTelemetryRoute: ApiTelemetryRoute,
@@ -779,6 +841,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminProjectsProjectRoute: AdminProjectsProjectRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiJobsGithubRoute: ApiJobsGithubRoute,
+  ApiJobsLinksRoute: ApiJobsLinksRoute,
   ApiRpcSplatRoute: ApiRpcSplatRoute,
   ProjectsProjectSuggestRoute: ProjectsProjectSuggestRoute,
 }

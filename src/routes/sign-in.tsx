@@ -1,7 +1,7 @@
 import { useSignInSocial } from '@better-auth-ui/react'
 import { createFileRoute } from '@tanstack/react-router'
 import { Mail, ShieldCheck } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { authClient } from '../lib/auth-client'
 import { safeReturnPath } from '../lib/return-path'
@@ -39,6 +39,10 @@ function SignInPage() {
     'We will email you a one-time sign-in code. No password required.',
   )
   const [busy, setBusy] = useState(false)
+  const otpInput = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    if (sent) otpInput.current?.focus()
+  }, [sent])
 
   async function sendOtp(event: React.FormEvent) {
     event.preventDefault()
@@ -123,7 +127,7 @@ function SignInPage() {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               required
-              disabled={sent}
+              disabled={sent || busy}
             />
           </label>
           {sent ? (
@@ -131,6 +135,8 @@ function SignInPage() {
               Verification code
               <input
                 inputMode="numeric"
+                ref={otpInput}
+                aria-describedby="otp-status"
                 autoComplete="one-time-code"
                 value={otp}
                 onChange={(event) => setOtp(event.target.value)}
@@ -186,7 +192,7 @@ function SignInPage() {
         <p className="form-message" role="alert">
           {social.error?.message || callbackError}
         </p>
-        <p className="form-message" aria-live="polite">
+        <p id="otp-status" className="form-message" aria-live="polite">
           {message}
         </p>
       </section>

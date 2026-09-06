@@ -25,6 +25,9 @@
     "db:migrate": "drizzle-kit migrate",
     "db:use-pooler": "tsx scripts/use-supabase-pooler.ts",
     "github:sync": "tsx scripts/sync-github.ts",
+    "github:discover": "tsx scripts/discover-github.ts",
+    "catalog:import-mobile": "tsx scripts/import-mobile-projects.ts",
+    "metrics:report": "tsx scripts/report-web-vitals.ts",
     "asset:process": "tsx scripts/process-asset.ts",
     "editor:invite": "tsx scripts/invite-editor.ts"
   },
@@ -53,6 +56,7 @@
     "resend": "^6.26.0",
     "sharp": "0.35.4",
     "tailwindcss": "4.3.3",
+    "web-vitals": "6.2.1",
     "zod": "4.5.4"
   },
   "devDependencies": {

@@ -126,9 +126,10 @@ export const getEcosystemData = createServerFn({ method: 'GET' })
       trending: result.projects
         .filter(
           (project) =>
-            project.momentum?.score !== null &&
-            project.momentum?.health !== 'stale' &&
-            !project.momentum?.anomaly,
+            project.momentum != null &&
+            project.momentum.score !== null &&
+            !['stale', 'disabled'].includes(project.momentum.health) &&
+            !project.momentum.anomaly,
         )
         .sort((a, b) => (b.momentum?.score ?? 0) - (a.momentum?.score ?? 0)),
       recommended: result.projects.filter((project) => project.recommended),

@@ -44,7 +44,10 @@ function CategoryPage() {
   const trending = projects
     .filter(
       (project) =>
-        project.momentum?.score !== null && !project.momentum?.anomaly,
+        project.momentum != null &&
+        project.momentum.score !== null &&
+        !['stale', 'disabled'].includes(project.momentum.health) &&
+        !project.momentum.anomaly,
     )
     .sort((a, b) => (b.momentum?.score ?? 0) - (a.momentum?.score ?? 0))
   return (

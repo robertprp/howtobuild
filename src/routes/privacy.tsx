@@ -33,9 +33,10 @@ function Privacy() {
       <section>
         <h2>Performance and errors</h2>
         <p>
-          We collect page performance measurements, route names, browser
-          characteristics, and application error details to find regressions. Do
-          not put secrets or personal information into public URLs or search
+          We collect performance samples, coarse route groups, viewport sizes,
+          and error categories to find regressions. This telemetry does not
+          retain raw error messages, full page paths, or query strings. Do not
+          put secrets or personal information into public URLs or search
           queries.
         </p>
       </section>
