@@ -1,4 +1,5 @@
 import type { PublicStack } from '../editorial/model'
+import { optionalStarterGroups } from './addons'
 
 export type StarterOption = {
   id: string
@@ -12,6 +13,7 @@ export type StarterOption = {
 }
 
 export type StarterChoice = {
+  omitted?: boolean
   id: string
   name: string
   responsibility: string
@@ -66,7 +68,13 @@ export function starterGroups(
     } else
       base.push({ responsibility: option.responsibility, options: [choice] })
   }
-  return base
+  return [
+    ...base,
+    ...optionalStarterGroups(stack.slug).filter(
+      (group) =>
+        !base.some((item) => item.responsibility === group.responsibility),
+    ),
+  ]
 }
 
 export function buildStarterPrompt(
@@ -88,10 +96,12 @@ export function buildStarterPrompt(
           '- UI library: React, through the Next.js App Router framework. React alone is not the full-stack framework.',
         ]
       : []),
-    ...choices.map(
-      (choice) =>
-        `- ${choice.responsibility}: ${choice.name}\n  Integration: ${choice.rationale}\n  Cost context: ${choice.cost}\n  Reference: ${choice.sourceUrl}`,
-    ),
+    ...choices
+      .filter((choice) => !choice.omitted)
+      .map(
+        (choice) =>
+          `- ${choice.responsibility}: ${choice.name}\n  Integration: ${choice.rationale}\n  Cost context: ${choice.cost}\n  Reference: ${choice.sourceUrl}`,
+      ),
     '',
     '## Implementation brief',
     '1. Inspect the current repository and its instructions. Explain the architecture and verify the current official installation guides and package compatibility for the selected choices. Preserve existing work.',
@@ -99,6 +109,16 @@ export function buildStarterPrompt(
     '3. If authentication is selected, enforce authorization on the server. Implement sign-in, sign-out, session handling, and protected data access. Keep provider secrets server-side and document required environment variables.',
     '4. Document data models and migration commands. Do not provision paid services, deploy, or modify an existing database without explicit authorization. Use placeholders in .env.example and never invent API keys.',
     '5. Validate with the repository’s allowed checks and record their results. Document what remains dependent on account setup, credentials, or deployment.',
+    '6. Do not add optional providers that were not selected. For external integrations, keep secrets server-side, verify webhook signatures, and make event handling idempotent. Hosted add-ons change the base stack’s self-hosting and cost assumptions.',
+    ...(choices.some(
+      (choice) =>
+        !choice.omitted &&
+        choice.responsibility === 'Identity verification (KYC)',
+    )
+      ? [
+          '7. Identity verification is separate from sign-in. Confirm the actual verification requirement before collecting sensitive data. Prefer the provider-hosted flow; never trust the browser redirect as approval. Verify the provider outcome on the server, store only necessary references/status, and never put identity documents or biometrics in logs or analytics. Confirm retention, consent, coverage, and review requirements with the product owner.',
+        ]
+      : []),
     '',
     '## Base stack tradeoffs (reassess when a choice is replaced)',
     ...stack.tradeoffs.map((tradeoff) => `- ${tradeoff}`),

@@ -716,7 +716,17 @@ export const accountRelations = relations(account, ({ one }) => ({
   user: one(user, { fields: [account.userId], references: [user.id] }),
 }))
 
+export const linkChecks = pgTable('link_checks', {
+  urlHash: text('url_hash').primaryKey(),
+  url: text('url').notNull(),
+  status: text('status').notNull(),
+  httpStatus: integer('http_status'),
+  detail: text('detail').notNull(),
+  checkedAt: timestamp('checked_at', { withTimezone: true }).notNull(),
+})
+
 export const schema = {
+  linkChecks,
   account,
   accountRelations,
   abuseReports,

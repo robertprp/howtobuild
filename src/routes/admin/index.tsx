@@ -31,6 +31,9 @@ function AdminHome() {
           <h1>Good morning, {editor.name.split(' ')[0]}.</h1>
         </div>
         <div className="editor-actions">
+          <a className="button secondary" href="/admin/operations">
+            Operations
+          </a>
           <a className="button secondary" href="/admin/submissions">
             Moderation queue
           </a>

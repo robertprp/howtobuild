@@ -46,6 +46,10 @@ export function StackStarter({ stack }: { stack: PublicStack }) {
           Choose the pieces you want, then copy the build prompt into your
           coding assistant. No account needed.
         </p>
+        <p>
+          Optional capabilities start as “Not needed”. Hosted providers add
+          external dependencies, including to the open-source stack.
+        </p>
       </header>
       <div className="starter-layout">
         <div className="starter-controls">
@@ -62,38 +66,49 @@ export function StackStarter({ stack }: { stack: PublicStack }) {
               placeholder={stack.summary}
             />
           </label>
-          {groups.map((group, index) => (
-            <div className="starter-choice" key={group.responsibility}>
-              <label>
-                {group.responsibility}
-                <select
-                  value={choices[index].id}
-                  onChange={(event) => {
-                    setSelections((previous) => ({
-                      ...previous,
-                      [group.responsibility]: event.target.value,
-                    }))
-                    setMessage('')
-                  }}
-                >
-                  {group.options.map((option) => (
-                    <option value={option.id} key={option.id}>
-                      {option.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <p>{choices[index].rationale}</p>
-              <small>{choices[index].cost}</small>
-              <a
-                href={choices[index].sourceUrl}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Read the source ↗
-              </a>
-            </div>
-          ))}
+          {groups.map((group, index) => {
+            const optional = group.options[0].id.startsWith('none:')
+            const Container = optional ? 'details' : 'div'
+            return (
+              <Container className="starter-choice" key={group.responsibility}>
+                {optional ? (
+                  <summary>
+                    {group.responsibility} · {choices[index].name}
+                  </summary>
+                ) : null}
+                <label>
+                  {group.responsibility}
+                  <select
+                    value={choices[index].id}
+                    onChange={(event) => {
+                      setSelections((previous) => ({
+                        ...previous,
+                        [group.responsibility]: event.target.value,
+                      }))
+                      setMessage('')
+                    }}
+                  >
+                    {group.options.map((option) => (
+                      <option value={option.id} key={option.id}>
+                        {option.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <p>{choices[index].rationale}</p>
+                <small>{choices[index].cost}</small>
+                {choices[index].sourceUrl ? (
+                  <a
+                    href={choices[index].sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Read the source ↗
+                  </a>
+                ) : null}
+              </Container>
+            )
+          })}
           {choices.some((choice) => choice.id === 'nextjs') ? (
             <p className="form-message">
               Next.js includes React. The extra authentication and UI options

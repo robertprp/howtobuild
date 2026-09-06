@@ -7,19 +7,18 @@ export const Route = createFileRoute('/api/health')({
     handlers: {
       GET: async () => {
         try {
-          const database = await checkDatabase()
-          return Response.json({ ok: true, database })
-        } catch (error) {
+          await checkDatabase()
+          return Response.json(
+            { ok: true },
+            { headers: { 'Cache-Control': 'no-store' } },
+          )
+        } catch {
           return Response.json(
             {
               ok: false,
-              database: null,
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Database check failed',
+              error: 'Service unavailable',
             },
-            { status: 503 },
+            { status: 503, headers: { 'Cache-Control': 'no-store' } },
           )
         }
       },

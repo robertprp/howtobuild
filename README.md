@@ -2,6 +2,12 @@
 
 Phase 4 adds authenticated community project submissions, edit suggestions, moderation, contribution status, and abuse controls to the public-beta field guide.
 
+Phase 5 is underway: `/admin/operations` adds repository-health summaries, moderation backlog counts, and editorial review reminders. This first slice also hardens the public health response and adds Vercel security headers. It requires no new migration. See the [Phase 5 runbook](docs/phase-5-runbook.md) for limitations and the remaining launch gates.
+
+The next Phase 5 slice adds `/admin/links` and an opt-in daily link monitor. It requires migration `0008_ambitious_scalphunter.sql` (generated, not applied here), `CRON_SECRET`, and an explicit `LINK_CHECK_ALLOWED_HOSTS` allowlist. Apply the migration against the intended existing database before enabling the monitor. Migrations still do not run automatically.
+
+Further hardening bounds and validates telemetry, removes raw error/path data from those events, and adds dependency-update configuration and an [incident/recovery procedure](docs/incident-and-recovery.md). Phase 5 launch signoff remains open. [Phase 6 launch readiness](docs/phase-6-runbook.md) now includes official Web Vitals measurement and a read-only `pnpm metrics:report /path/to/telemetry.ndjson` command. Migration 0008 was owner-applied and its table verified read-only on 6 September. [Monetization research](docs/monetization-research.md) proposes later experiments; no monetization is implemented.
+
 ## Run locally
 
 Requirements: Node 22–26, pnpm 9, and an already configured Postgres database. Fill in `.env` before running migrations; do not overwrite an existing `.env`.
