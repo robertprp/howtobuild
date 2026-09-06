@@ -17,6 +17,8 @@ const socialProviders = {
         github: {
           clientId: process.env.GITHUB_CLIENT_ID,
           clientSecret: process.env.GITHUB_CLIENT_SECRET,
+          disableSignUp: false,
+          disableImplicitSignUp: false,
         },
       }
     : {}),
@@ -25,6 +27,8 @@ const socialProviders = {
         google: {
           clientId: process.env.GOOGLE_CLIENT_ID,
           clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          disableSignUp: false,
+          disableImplicitSignUp: false,
         },
       }
     : {}),
@@ -60,6 +64,9 @@ export const auth = betterAuth({
   },
   plugins: [
     emailOTP({
+      // Registration is public. Editor invitations are checked separately,
+      // only when accessing privileged editorial actions.
+      disableSignUp: false,
       expiresIn: 600,
       allowedAttempts: 5,
       storeOTP: 'hashed',

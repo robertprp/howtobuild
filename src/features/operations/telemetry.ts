@@ -15,6 +15,7 @@ export function telemetryRoute(path: string) {
     'devops',
     'observability',
     'ai-tools',
+    'advertise',
   ].includes(first)
     ? `/${first}`
     : path === '/'
@@ -23,6 +24,35 @@ export function telemetryRoute(path: string) {
 }
 
 export const telemetrySchema = z.discriminatedUnion('kind', [
+  z
+    .object({
+      kind: z.literal('product'),
+      event: z.enum([
+        'page_view',
+        'search_result_click',
+        'outbound_click',
+        'starter_copy',
+        'starter_download',
+        'sponsor_click',
+        'sponsor_inquiry',
+      ]),
+      path: z.enum([
+        '/',
+        '/guides',
+        '/stacks',
+        '/projects',
+        '/search',
+        '/trending',
+        '/frontend',
+        '/backend',
+        '/mobile',
+        '/devops',
+        '/observability',
+        '/ai-tools',
+        '/advertise',
+      ]),
+    })
+    .strict(),
   z.object({
     kind: z.literal('web-vitals'),
     source: z.literal('web-vitals/6.2.1'),

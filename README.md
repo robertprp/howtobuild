@@ -45,7 +45,7 @@ Migrations do **not** run automatically on `pnpm dev`, `pnpm build`, or `pnpm st
 - Private metric-health controls with reasoned audit events
 - A 39-project sourced private-alpha catalog
 - Project, category, facet, source, link, repository, asset, role, redirect, revision, and audit schema
-- Public Better Auth accounts with invite-only, server-side editor/admin authorization
+- Public registration through GitHub, Google, or email codes; no invitation required. Editor/admin permissions remain separately restricted on the server.
 - Transactional draft, revision, publish, unpublish, and slug-redirect workflows
 - Private, `noindex` previews that never enter public queries or the sitemap
 - Canonical metadata, Open Graph metadata, XML sitemap, robots rules, redirects, and real 404s

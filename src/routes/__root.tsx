@@ -4,6 +4,7 @@ import appCss from '../styles.css?url'
 import { Providers } from '../components/providers'
 import { SiteHeader } from '../components/site-chrome'
 import { Telemetry } from '../components/telemetry'
+import { ProductAnalytics } from '../components/product-analytics'
 import { SITE_DESCRIPTION, SITE_INDEXABLE } from '../lib/seo'
 
 export const Route = createRootRoute({
@@ -80,6 +81,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <SiteHeader />
           <div id="main-content">{children}</div>
           <Telemetry />
+          <ProductAnalytics />
         </Providers>
         {import.meta.env.VITE_ANALYTICS_SCRIPT_URL ? (
           <script

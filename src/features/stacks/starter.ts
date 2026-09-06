@@ -1,5 +1,10 @@
 import type { PublicStack } from '../editorial/model'
 import { optionalStarterGroups } from './addons'
+import {
+  tanstackAuth,
+  tanstackChoice,
+  typescriptStacks,
+} from './typescript-options'
 
 export type StarterOption = {
   id: string
@@ -47,6 +52,22 @@ export function starterGroups(
       })),
     ],
   }))
+  if (typescriptStacks.has(stack.slug)) {
+    const framework = base.find((group) =>
+      ['Application framework', 'Web application'].includes(
+        group.responsibility,
+      ),
+    )
+    if (
+      framework &&
+      !framework.options.some((choice) => choice.id === tanstackChoice.id)
+    ) {
+      framework.options.push({
+        ...tanstackChoice,
+        responsibility: framework.responsibility,
+      })
+    }
+  }
   const chosenProjects = new Set(
     base.map(
       (group) =>
@@ -55,7 +76,10 @@ export function starterGroups(
         )?.id ?? group.options[0].id,
     ),
   )
-  for (const option of stack.starterOptions) {
+  for (const option of [
+    ...stack.starterOptions,
+    ...(typescriptStacks.has(stack.slug) ? [tanstackAuth] : []),
+  ]) {
     if (!chosenProjects.has(option.requiresProject)) continue
     const choice: StarterChoice = { ...option, rationale: option.integration }
     const group = base.find(
@@ -70,7 +94,7 @@ export function starterGroups(
   }
   return [
     ...base,
-    ...optionalStarterGroups(stack.slug).filter(
+    ...optionalStarterGroups(stack.slug, chosenProjects).filter(
       (group) =>
         !base.some((item) => item.responsibility === group.responsibility),
     ),
@@ -83,6 +107,9 @@ export function buildStarterPrompt(
   purpose: string,
 ) {
   const usesNext = choices.some((choice) => choice.id === 'nextjs')
+  const usesTanstack = choices.some((choice) => choice.id === 'tanstack-start')
+  const usesTypescript =
+    typescriptStacks.has(stack.slug) || usesNext || usesTanstack
   return [
     `# Build with ${stack.name}`,
     '',
@@ -90,10 +117,21 @@ export function buildStarterPrompt(
     `Target user: ${stack.targetUser}`,
     '',
     '## Selected technologies',
-    ...(usesNext
+    ...(usesTypescript
       ? [
           '- Language: TypeScript with strict checking.',
+          '- Package manager: pnpm (required). Use pnpm, not npm, npx, Yarn or Bun package-manager commands, for installation, scaffolding, scripts, examples, documentation and CI. Pin a compatible pnpm version in package.json packageManager, commit pnpm-lock.yaml, and use pnpm install --frozen-lockfile in CI. Use pnpm add, pnpm exec and the pinned version’s supported pnpm scaffolding command. Preserve existing work; do not delete or replace another lockfile without explicit migration approval.',
+          '- Package-manager reference: https://pnpm.io/installation',
+        ]
+      : []),
+    ...(usesNext
+      ? [
           '- UI library: React, through the Next.js App Router framework. React alone is not the full-stack framework.',
+        ]
+      : []),
+    ...(usesTanstack
+      ? [
+          '- Application mode: Fullstack TanStack Start (React). Use TanStack Router/server routes/server functions, not Next.js App Router APIs. If a separate API layer is selected, define its boundary explicitly and avoid duplicate endpoints.',
         ]
       : []),
     ...choices
@@ -110,6 +148,15 @@ export function buildStarterPrompt(
     '4. Document data models and migration commands. Do not provision paid services, deploy, or modify an existing database without explicit authorization. Use placeholders in .env.example and never invent API keys.',
     '5. Validate with the repository’s allowed checks and record their results. Document what remains dependent on account setup, credentials, or deployment.',
     '6. Do not add optional providers that were not selected. For external integrations, keep secrets server-side, verify webhook signatures, and make event handling idempotent. Hosted add-ons change the base stack’s self-hosting and cost assumptions.',
+    ...(usesTanstack &&
+    choices.some(
+      (choice) =>
+        choice.id === 'vercel' && choice.responsibility === 'Deployment',
+    )
+      ? [
+          'Deployment compatibility: verify the current TanStack Start/Vercel adapter, runtime and build instructions for the pinned versions. Do not infer support or an experimental label from a screenshot. Reference: https://tanstack.com/start/latest/docs/framework/react/guide/hosting',
+        ]
+      : []),
     ...(choices.some(
       (choice) =>
         !choice.omitted &&

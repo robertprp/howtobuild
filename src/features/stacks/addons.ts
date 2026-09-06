@@ -1,4 +1,5 @@
 import type { StarterChoice } from './starter'
+import { typescriptAddonGroups, typescriptStacks } from './typescript-options'
 
 // Reviewed 2026-09-06. Hosted APIs work behind the selected server framework;
 // these are optional product capabilities, not mandatory runtime dependencies.
@@ -39,6 +40,16 @@ export const addonGroups: Array<{
   {
     responsibility: 'Billing',
     options: [
+      {
+        id: 'polar',
+        name: 'Polar',
+        responsibility: 'Billing',
+        rationale:
+          'Evaluate Polar as a hosted merchant of record for eligible digital products. Use the adapter for the selected framework, server-created checkout and verified webhook events for entitlements. Confirm account/product eligibility, fees and responsibilities before production.',
+        cost: 'Commercial hosted service; fees and eligibility depend on current terms.',
+        sourceUrl:
+          'https://polar.sh/docs/integrate/sdk/adapters/tanstack-start',
+      },
       {
         id: 'stripe-billing',
         name: 'Stripe Billing',
@@ -118,14 +129,9 @@ export const addonGroups: Array<{
   },
 ]
 
-export function optionalStarterGroups(stackSlug: string) {
-  if (
-    !['modern-typescript-saas', 'open-source-saas', 'ai-saas'].includes(
-      stackSlug,
-    )
-  )
-    return []
-  return addonGroups.map((group) => ({
+export function optionalStarterGroups(stackSlug: string, chosen: Set<string>) {
+  if (!typescriptStacks.has(stackSlug)) return []
+  return [...addonGroups, ...typescriptAddonGroups(chosen)].map((group) => ({
     responsibility: group.responsibility,
     options: [
       {

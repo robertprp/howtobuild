@@ -56,6 +56,7 @@ export const Route = createFileRoute('/sitemap.xml')({
           })),
           { path: '/methodology', lastmod: undefined },
           { path: '/about', lastmod: undefined },
+          { path: '/advertise', lastmod: undefined },
           { path: '/corrections', lastmod: undefined },
           { path: '/privacy', lastmod: undefined },
           { path: '/terms', lastmod: undefined },

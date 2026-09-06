@@ -72,6 +72,7 @@ export function SiteFooter({ lastUpdated }: { lastUpdated?: string | null }) {
           <a href="/stacks">Tech stacks</a>
           <a href="/methodology">Methodology</a>
           <a href="/about">About</a>
+          <a href="/advertise">Sponsor the guide</a>
           <a href="/corrections">Corrections</a>
           <a href="/privacy">Privacy</a>
           <a href="/terms">Terms</a>

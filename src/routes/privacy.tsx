@@ -65,6 +65,26 @@ function Privacy() {
         </p>
       </section>
       <section>
+        <h2>Optional product measurement and sponsorship</h2>
+        <p>
+          When enabled, first-party product measurement counts public page
+          groups, documentation and search-result clicks, successful prompt
+          copies, download requests, and sponsorship contact clicks. It does not
+          include visitor identifiers, cookies, referrers, destination URLs,
+          search text, or prompt content. It respects Do Not Track and Global
+          Privacy Control. These are action counts, not unique-person or
+          completed-build measurements. Hosting infrastructure may still process
+          standard request information.
+        </p>
+        <p>
+          Sponsor placements, when active, are explicitly labeled and do not
+          change editorial rankings. Clicking an external sponsor link takes you
+          to a site with its own privacy policy. Email inquiries are handled
+          through your email provider and the receiving inbox; do not send
+          sensitive information.
+        </p>
+      </section>
+      <section>
         <h2>Contact</h2>
         <p>
           Questions or deletion requests can be sent to{' '}

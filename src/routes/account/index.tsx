@@ -108,7 +108,8 @@ function AccountPage() {
         {profile.error ? <p role="alert">{profile.error.message}</p> : null}
       </form>
       <p>
-        <a href="/admin">Editorial desk</a> · Available to invited editors only.
+        <a href="/admin">Editorial desk</a> · Restricted to authorized editors.
+        Community accounts do not include publishing access.
       </p>
       <section className="account-sessions">
         <h2>Active sessions</h2>

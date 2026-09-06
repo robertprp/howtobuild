@@ -1,4 +1,5 @@
 import { seoHead } from '../lib/seo'
+import { SponsorCard } from '../components/sponsor-card'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 
 import { EditorialFeature, TrendingRow } from '../components/project-views'
@@ -9,7 +10,7 @@ export const Route = createFileRoute('/$category')({
   loader: async ({ params }) => {
     const data = await getCategoryData({ data: { slug: params.category } })
     if (!data) throw notFound()
-    return data
+    return { ...data, sponsorCheckedAt: Date.now() }
   },
   head: ({ loaderData }) =>
     loaderData
@@ -33,7 +34,7 @@ export const Route = createFileRoute('/$category')({
 })
 
 function CategoryPage() {
-  const { category, projects } = Route.useLoaderData()
+  const { category, projects, sponsorCheckedAt } = Route.useLoaderData()
   const categoryFacets = Array.from(
     new Map(
       projects.flatMap((project) =>
@@ -90,6 +91,12 @@ function CategoryPage() {
             ))}
           </nav>
         ) : null}
+        <div className="shell">
+          <SponsorCard
+            path={`/${category.slug}`}
+            checkedAt={sponsorCheckedAt}
+          />
+        </div>
         {trending.length ? (
           <section className="shell project-section">
             <div className="section-heading">

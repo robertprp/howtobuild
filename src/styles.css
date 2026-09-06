@@ -1487,6 +1487,21 @@ label small {
   margin-top: 2rem;
   align-items: start;
 }
+.sponsor-card {
+  margin-block: 1.5rem;
+  padding: 1.25rem;
+  border: 1px dashed var(--line);
+  background: var(--paper);
+  min-height: 180px;
+}
+.sponsor-card h2 {
+  font-size: 1.35rem;
+}
+.sponsor-card small {
+  display: block;
+  margin-top: 0.75rem;
+  color: var(--muted);
+}
 .starter-controls label {
   display: grid;
   gap: 0.6rem;

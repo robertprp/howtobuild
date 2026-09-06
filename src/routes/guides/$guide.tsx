@@ -1,5 +1,6 @@
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { ContentPage } from '../../components/content-page'
+import { SponsorCard } from '../../components/sponsor-card'
 import { Breadcrumbs } from '../../components/breadcrumbs'
 import { buildGuides } from '../../features/guides/content'
 import { absoluteUrl, seoHead } from '../../lib/seo'
@@ -8,7 +9,7 @@ export const Route = createFileRoute('/guides/$guide')({
   loader: ({ params }) => {
     const guide = buildGuides.find((item) => item.slug === params.guide)
     if (!guide) throw notFound()
-    return guide
+    return { ...guide, sponsorCheckedAt: Date.now() }
   },
   head: ({ loaderData: guide }) =>
     guide
@@ -54,6 +55,10 @@ function GuidePage() {
       title={guide.title}
       lede={guide.description}
     >
+      <SponsorCard
+        path={`/guides/${guide.slug}`}
+        checkedAt={guide.sponsorCheckedAt}
+      />
       <Breadcrumbs
         items={[
           { name: 'Home', path: '/' },

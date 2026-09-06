@@ -1,10 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { deliverTelemetry } from '../../features/operations/telemetry-sink.server'
 import {
   telemetryRoute,
   telemetrySchema,
 } from '../../features/operations/telemetry'
 
 const maxPayloadBytes = 16_384
+// Bounded, identifier-free protection for downstream log volume. Per-instance
+// only: production WAF limits are still needed; this does not prove humanity.
+let productWindow = 0
+let productCount = 0
 
 export const Route = createFileRoute('/api/telemetry')({
   server: {
@@ -52,36 +57,33 @@ export const Route = createFileRoute('/api/telemetry')({
         }
         const parsed = telemetrySchema.safeParse(event)
         if (!parsed.success) return new Response(null, { status: 400 })
+        if (parsed.data.kind === 'product') {
+          if (process.env.PRODUCT_ANALYTICS_ENABLED !== 'true')
+            return new Response(null, { status: 204 })
+          if (request.headers.get('origin') !== new URL(request.url).origin)
+            return new Response(null, { status: 403 })
+          if (
+            request.headers.get('dnt') === '1' ||
+            request.headers.get('sec-gpc') === '1'
+          )
+            return new Response(null, { status: 204 })
+          const window = Math.floor(Date.now() / 60_000)
+          if (window !== productWindow) {
+            productWindow = window
+            productCount = 0
+          }
+          if (++productCount > 1000)
+            return new Response(null, {
+              status: 429,
+              headers: { 'Retry-After': '60', 'Cache-Control': 'no-store' },
+            })
+        }
         const record = {
           service: 'howtobuild-web',
           receivedAt: new Date().toISOString(),
           event: { ...parsed.data, path: telemetryRoute(parsed.data.path) },
         }
-        const ingestUrl = process.env.OBSERVABILITY_INGEST_URL
-        if (ingestUrl) {
-          try {
-            const response = await fetch(ingestUrl, {
-              method: 'POST',
-              redirect: 'error',
-              signal: AbortSignal.timeout(2000),
-              headers: {
-                'Content-Type': 'application/json',
-                ...(process.env.OBSERVABILITY_INGEST_TOKEN
-                  ? {
-                      Authorization: `Bearer ${process.env.OBSERVABILITY_INGEST_TOKEN}`,
-                    }
-                  : {}),
-              },
-              body: JSON.stringify(record),
-            })
-            await response.body?.cancel()
-            if (!response.ok) console.error('telemetry.forward.failed')
-          } catch {
-            console.error('telemetry.forward.failed')
-          }
-        } else {
-          console.info('telemetry.event', record)
-        }
+        await deliverTelemetry(record)
         return new Response(null, {
           status: 202,
           headers: { 'Cache-Control': 'no-store' },

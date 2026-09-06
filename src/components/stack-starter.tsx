@@ -1,5 +1,7 @@
 import { useRef, useState } from 'react'
 import { Check, Copy, Download } from 'lucide-react'
+import { trackProductEvent } from '../features/operations/product-events'
+import { typescriptStacks } from '../features/stacks/typescript-options'
 import type { PublicStack } from '../features/editorial/model'
 import { buildStarterPrompt, starterGroups } from '../features/stacks/starter'
 
@@ -19,6 +21,7 @@ export function StackStarter({ stack }: { stack: PublicStack }) {
   async function copy() {
     try {
       await navigator.clipboard.writeText(prompt)
+      trackProductEvent('starter_copy')
       setMessage('Prompt copied.')
     } catch {
       preview.current?.focus()
@@ -34,6 +37,7 @@ export function StackStarter({ stack }: { stack: PublicStack }) {
     link.href = url
     link.download = `${stack.slug}-starter.md`
     link.click()
+    trackProductEvent('starter_download')
     setTimeout(() => URL.revokeObjectURL(url), 1000)
     setMessage('Markdown prompt downloaded.')
   }
@@ -53,6 +57,12 @@ export function StackStarter({ stack }: { stack: PublicStack }) {
       </header>
       <div className="starter-layout">
         <div className="starter-controls">
+          {typescriptStacks.has(stack.slug) ? (
+            <p className="form-message">
+              Package manager: pnpm. All TypeScript setup, script, and CI
+              instructions use pnpm.
+            </p>
+          ) : null}
           <label>
             What are you building?
             <textarea

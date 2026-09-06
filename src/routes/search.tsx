@@ -115,6 +115,7 @@ function SearchPage() {
         {data.categories.length || data.facets.length ? (
           <section
             className="landing-results"
+            data-search-results
             aria-labelledby="landing-results"
           >
             <p className="eyebrow" id="landing-results">
@@ -149,7 +150,11 @@ function SearchPage() {
         ) : null}
 
         {data.stacks.length ? (
-          <section className="project-section" aria-labelledby="stack-results">
+          <section
+            className="project-section"
+            aria-labelledby="stack-results"
+            data-search-results
+          >
             <div className="section-heading">
               <div>
                 <p className="eyebrow">Stack results</p>
@@ -164,7 +169,11 @@ function SearchPage() {
           </section>
         ) : null}
 
-        <section className="project-section" aria-live="polite">
+        <section
+          className="project-section"
+          aria-live="polite"
+          data-search-results
+        >
           <div className="section-heading">
             <div>
               <p className="eyebrow">Project results</p>

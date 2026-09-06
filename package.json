@@ -28,6 +28,8 @@
     "github:discover": "tsx scripts/discover-github.ts",
     "catalog:import-mobile": "tsx scripts/import-mobile-projects.ts",
     "metrics:report": "tsx scripts/report-web-vitals.ts",
+    "product:report": "tsx scripts/report-product-events.ts",
+    "telemetry:check": "node --env-file=.env --import tsx scripts/check-telemetry.ts",
     "asset:process": "tsx scripts/process-asset.ts",
     "editor:invite": "tsx scripts/invite-editor.ts"
   },
@@ -37,6 +39,7 @@
     "@fontsource/fraunces": "5.3.0",
     "@fontsource/ibm-plex-mono": "5.3.0",
     "@fontsource/ibm-plex-sans": "5.3.0",
+    "@logtail/node": "0.5.8",
     "@orpc/client": "1.15.0",
     "@orpc/server": "1.15.0",
     "@orpc/tanstack-query": "1.15.0",

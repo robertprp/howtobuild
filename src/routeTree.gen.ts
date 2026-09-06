@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CategoryRouteImport } from './routes/$category'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AdvertiseRouteImport } from './routes/advertise'
 import { Route as CorrectionsRouteImport } from './routes/corrections'
 import { Route as MethodologyRouteImport } from './routes/methodology'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -61,6 +62,11 @@ const CategoryRoute = CategoryRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdvertiseRoute = AdvertiseRouteImport.update({
+  id: '/advertise',
+  path: '/advertise',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CorrectionsRoute = CorrectionsRouteImport.update({
@@ -243,6 +249,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$category': typeof CategoryRouteWithChildren
   '/about': typeof AboutRoute
+  '/advertise': typeof AdvertiseRoute
   '/corrections': typeof CorrectionsRoute
   '/methodology': typeof MethodologyRoute
   '/privacy': typeof PrivacyRoute
@@ -283,6 +290,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$category': typeof CategoryRouteWithChildren
   '/about': typeof AboutRoute
+  '/advertise': typeof AdvertiseRoute
   '/corrections': typeof CorrectionsRoute
   '/methodology': typeof MethodologyRoute
   '/privacy': typeof PrivacyRoute
@@ -324,6 +332,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$category': typeof CategoryRouteWithChildren
   '/about': typeof AboutRoute
+  '/advertise': typeof AdvertiseRoute
   '/corrections': typeof CorrectionsRoute
   '/methodology': typeof MethodologyRoute
   '/privacy': typeof PrivacyRoute
@@ -366,6 +375,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$category'
     | '/about'
+    | '/advertise'
     | '/corrections'
     | '/methodology'
     | '/privacy'
@@ -406,6 +416,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$category'
     | '/about'
+    | '/advertise'
     | '/corrections'
     | '/methodology'
     | '/privacy'
@@ -446,6 +457,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$category'
     | '/about'
+    | '/advertise'
     | '/corrections'
     | '/methodology'
     | '/privacy'
@@ -487,6 +499,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CategoryRoute: typeof CategoryRouteWithChildren
   AboutRoute: typeof AboutRoute
+  AdvertiseRoute: typeof AdvertiseRoute
   CorrectionsRoute: typeof CorrectionsRoute
   MethodologyRoute: typeof MethodologyRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -544,6 +557,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/advertise': {
+      id: '/advertise'
+      path: '/advertise'
+      fullPath: '/advertise'
+      preLoaderRoute: typeof AdvertiseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/corrections': {
@@ -810,6 +830,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CategoryRoute: CategoryRouteWithChildren,
   AboutRoute: AboutRoute,
+  AdvertiseRoute: AdvertiseRoute,
   CorrectionsRoute: CorrectionsRoute,
   MethodologyRoute: MethodologyRoute,
   PrivacyRoute: PrivacyRoute,

@@ -20,7 +20,7 @@ export const Route = createFileRoute('/sign-in')({
   loader: () => getSignInOptions(),
   head: () => ({
     meta: [
-      { title: 'Sign in — HowToBuild.dev' },
+      { title: 'Sign in or create an account — HowToBuild.dev' },
       { name: 'robots', content: 'noindex, nofollow' },
     ],
   }),
@@ -36,7 +36,7 @@ function SignInPage() {
   const [otp, setOtp] = useState('')
   const [sent, setSent] = useState(false)
   const [message, setMessage] = useState(
-    'We will email you a one-time sign-in code. No password required.',
+    'We will email you a one-time code to sign in or create your account. No password or invitation required.',
   )
   const [busy, setBusy] = useState(false)
   const otpInput = useRef<HTMLInputElement>(null)
@@ -84,17 +84,22 @@ function SignInPage() {
     <main className="auth-page shell">
       <section>
         <p className="eyebrow">Community account</p>
-        <h1>Sign in to contribute.</h1>
+        <h1>Join the community.</h1>
         <p className="lede">
-          Submit projects, suggest factual updates, and follow moderation
-          status. Publishing remains an editor-only decision.
+          Everyone can create an account—no invitation needed. Submit projects,
+          suggest factual updates, and follow moderation status. Publishing
+          remains an editor-only decision.
         </p>
       </section>
-      <section className="auth-panel" aria-label="Account sign in">
+      <section className="auth-panel" aria-label="Sign in or create an account">
         <div className="auth-assurance">
           <ShieldCheck aria-hidden="true" size={20} strokeWidth={1.8} />
-          <span>Secure account access</span>
+          <span>Sign in or create a free account</span>
         </div>
+        <p className="form-message">
+          New here? Your first successful sign-in creates your account. Already
+          a member? Use the same method to return.
+        </p>
         <button
           className="provider-button provider-github"
           onClick={() =>
@@ -194,6 +199,10 @@ function SignInPage() {
         </p>
         <p id="otp-status" className="form-message" aria-live="polite">
           {message}
+        </p>
+        <p className="form-message">
+          Read our <a href="/terms">Terms</a> and{' '}
+          <a href="/privacy">Privacy policy</a> before continuing.
         </p>
       </section>
     </main>

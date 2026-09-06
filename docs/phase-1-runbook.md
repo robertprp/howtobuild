@@ -17,7 +17,7 @@ The Phase 1 migration seeds 12 reviewed examples—two in each of Frontend, Back
 ## Editorial workflow
 
 1. Visit `/sign-in` and authenticate with the exact invited email through GitHub, Google, or email OTP.
-2. Confirm a non-invited new identity receives the generic invite-only error and cannot create an account.
+2. Registration is now public: confirm a new identity without an editor invitation can create a community account, but cannot access the editorial desk, private previews, or publishing actions. Invitations grant editorial roles only; they are not a sign-up requirement.
 3. Visit `/admin/projects/new`, complete every editorial, cost, link, source, and revision-note field, then save.
 4. Confirm the draft appears on the desk but `/projects/{slug}` returns 404.
 5. Open `/preview/{slug}` while signed in. Confirm the complete draft renders with a private-preview banner and `noindex, nofollow` metadata.
