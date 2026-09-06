@@ -13,3 +13,31 @@ dist-ssr
 .vinxi
 __unconfig*
 todos.json
+
+# Local planning, research, runbooks, and agent notes.
+/docs/
+AGENTS.md
+/.agents/
+/.claude/
+/.codex/
+
+# Private by default; retain public pnpm command implementations and dependencies.
+/scripts/*
+!/scripts/check-telemetry.ts
+!/scripts/discover-github.ts
+!/scripts/grant-admin.ts
+!/scripts/import-mobile-projects.ts
+!/scripts/invite-editor.ts
+!/scripts/process-asset.ts
+!/scripts/report-product-events.ts
+!/scripts/report-web-vitals.ts
+!/scripts/sync-github.ts
+!/scripts/use-supabase-pooler.ts
+!/scripts/data/
+/scripts/data/*
+!/scripts/data/mobile-projects.ts
+
+# Local logs and hosting credentials.
+*.log
+*.ndjson
+/.vercel/
