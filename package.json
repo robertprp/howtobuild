@@ -19,6 +19,8 @@
     "format": "prettier --write . && eslint --fix",
     "check": "prettier --check . && eslint",
     "typecheck": "tsc --noEmit",
+    "security:scan": "gitleaks git --log-opts='--all --full-history' --redact=100 --ignore-gitleaks-allow --max-decode-depth=3 --max-archive-depth=3 --no-banner",
+    "security:staged": "gitleaks git --staged --redact=100 --ignore-gitleaks-allow --no-banner",
     "test": "vitest run",
     "verify": "pnpm typecheck && pnpm test && pnpm build",
     "db:generate": "drizzle-kit generate",
