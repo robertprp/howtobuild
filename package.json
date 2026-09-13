@@ -37,7 +37,7 @@
     "admin:grant": "node --env-file-if-exists=.env --import tsx scripts/grant-admin.ts"
   },
   "dependencies": {
-    "@better-auth-ui/core": "1.7.22",
+    "@better-auth-ui/core": "1.7.23",
     "@better-auth-ui/react": "1.7.22",
     "@fontsource/fraunces": "5.3.0",
     "@fontsource/ibm-plex-mono": "5.3.0",
