@@ -126,9 +126,13 @@ function Home() {
               className="builder-search"
               onSubmit={(event) => {
                 event.preventDefault()
-                document
-                  .getElementById('tool-directory')
-                  ?.scrollIntoView({ behavior: 'smooth' })
+                document.getElementById('tool-directory')?.scrollIntoView({
+                  behavior: window.matchMedia(
+                    '(prefers-reduced-motion: reduce)',
+                  ).matches
+                    ? 'instant'
+                    : 'smooth',
+                })
               }}
               role="search"
             >
