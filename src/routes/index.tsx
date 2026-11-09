@@ -45,13 +45,14 @@ function Home() {
   const [recommended, setRecommended] = useState(false)
   const [sort, setSort] = useState('editorial')
   const [visibleCount, setVisibleCount] = useState(12)
+  const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean)
   const projects = data.projects
     .filter((project) => {
-      const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean)
       const text = [
         project.name,
         project.shortDescription,
         project.projectType,
+        project.category.name,
         ...project.facets.map((facet) => facet.name),
       ]
         .join(' ')
