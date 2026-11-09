@@ -202,7 +202,10 @@ function Home() {
                 <input
                   type="checkbox"
                   checked={recommended}
-                  onChange={(event) => setRecommended(event.target.checked)}
+                  onChange={(event) => {
+                    setRecommended(event.target.checked)
+                    setVisibleCount(12)
+                  }}
                 />
                 <span>Editorial picks</span>
               </label>
@@ -210,7 +213,10 @@ function Home() {
                 <input
                   type="checkbox"
                   checked={openSource}
-                  onChange={(event) => setOpenSource(event.target.checked)}
+                  onChange={(event) => {
+                    setOpenSource(event.target.checked)
+                    setVisibleCount(12)
+                  }}
                 />
                 <span>Open source</span>
               </label>
@@ -218,7 +224,10 @@ function Home() {
                 <input
                   type="checkbox"
                   checked={selfHostable}
-                  onChange={(event) => setSelfHostable(event.target.checked)}
+                  onChange={(event) => {
+                    setSelfHostable(event.target.checked)
+                    setVisibleCount(12)
+                  }}
                 />
                 <span>Self-hostable</span>
               </label>
@@ -230,7 +239,10 @@ function Home() {
                   type="radio"
                   name="home-category"
                   checked={!category}
-                  onChange={() => setCategory('')}
+                  onChange={() => {
+                    setCategory('')
+                    setVisibleCount(12)
+                  }}
                 />
                 All tools<span>{data.projects.length}</span>
               </label>
@@ -240,7 +252,10 @@ function Home() {
                     type="radio"
                     name="home-category"
                     checked={category === item.slug}
-                    onChange={() => setCategory(item.slug)}
+                    onChange={() => {
+                      setCategory(item.slug)
+                      setVisibleCount(12)
+                    }}
                   />
                   {item.name}
                   <span>
@@ -285,7 +300,10 @@ function Home() {
                 <span className="sr-only">Sort tools</span>
                 <select
                   value={sort}
-                  onChange={(event) => setSort(event.target.value)}
+                  onChange={(event) => {
+                    setSort(event.target.value)
+                    setVisibleCount(12)
+                  }}
                 >
                   <option value="editorial">Editorial picks first</option>
                   <option value="recent">Recently updated</option>
